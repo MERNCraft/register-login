@@ -1,0 +1,27 @@
+const DB = process.env.DB
+
+const mongoose = require('mongoose')
+const User = require('./models/user')
+
+mongoose
+  .connect(DB)
+  .then(() => {
+    console.log(`Connected to ${DB}`)
+
+    // Temporary test to show that the database works
+    require('../temp/addUser')()
+
+  })
+  .catch( error => {
+    console.log("DB connection ERROR:\n", error);
+    process.exit()
+  })
+
+
+const db = {
+  mongoose,
+  User
+}
+
+
+module.exports = db

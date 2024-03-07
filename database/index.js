@@ -1,3 +1,13 @@
+/**
+ * database/index.js
+ *
+ * Uses the mongoose module to connect to the MongoDB database
+ * and imports all the models that mongoose will need.
+ * 
+ * Exports an object with entries for mongoose and all the models.
+ */
+
+
 const DB = process.env.DB
 
 const mongoose = require('mongoose')

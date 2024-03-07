@@ -77,9 +77,10 @@ const validateSignup = async (req, res, next) => {
   function checkPassword() {
     if (!status && !password || typeof password !== "string") {
       treatInvalid({ password })
+
+    } else {
+      proceed()
     }
-    
-    proceed()
   }
 
   function proceed() {

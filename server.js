@@ -1,9 +1,15 @@
 require('dotenv').config()
+require('./database')
+
 const PORT = process.env.PORT
 
 const express = require('express')
-const db = require('./database')
+const { json, urlencoded } = express
 const app = express()
+
+
+app.use(json())
+app.use(urlencoded({ extended: true }))
 
 
 app.get('/', (req, res) => {
@@ -11,6 +17,9 @@ app.get('/', (req, res) => {
   res.send(`<pre>Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}</pre>`)
 })
+
+
+require('./routes/authorization')(app);
 
 
 app.listen(PORT, logStuffToConsole)

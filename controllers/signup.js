@@ -12,15 +12,41 @@ function signUp(req, res) {
   let message = ""
 
 
-  const treatSuccess = async (user) => {
-    message = `Document added to User collection
-${JSON.stringify(user, null, '  ')}`
+  const treatSuccess = user => {
+    const { username, email } = user
+    message = {
+      message: "User record created",
+      user: {
+        username,
+        email
+      }
+    }
   }
 
 
   const treatError = error => {
+    // Validation failed when creating the document
+
+    // console.log("error:", JSON.stringify(error, null, "  "))
+    // { "errors": {
+    //     "email": {
+    //       "stringValue": "\"[]\"",
+    //       "valueType": "Array",
+    //       "kind": "string",
+    //       "value": [],
+    //       "path": "email",
+    //       "reason": null,
+    //       "name": "CastError",
+    //       "message": "Cast to string failed for value \"[]\" (type Array) at path \"email\""
+    //     }
+    //   },
+    //   "_message": "User validation failed",
+    //   "name": "ValidationError",
+    //   "message": "User validation failed: email: Cast to string failed for value \"[]\" (type Array) at path \"email\""
+    // }
+    
     status = 500 // Server Error
-    message = error
+    message = { error: error.message }
   }
 
 
@@ -29,7 +55,7 @@ ${JSON.stringify(user, null, '  ')}`
       res.status(status)
     } // else status will be set to 200 by default
 
-    res.send({ message })
+    res.send(message)
   }
 
 

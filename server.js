@@ -1,16 +1,27 @@
 require('dotenv').config()
 require('./database')
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
+const COOKIE_SECRET = process.env.COOKIE_SECRET || ""
 
 const express = require('express')
 const { json, urlencoded } = express
+const cookieSession = require('cookie-session')
+
 const app = express()
 
+const cookieOptions = {
+  name: "cookie-session",
+  keys: [ COOKIE_SECRET ],
+  httpOnly: true,
+  sameSite: true
+}
 
 app.use(json())
 app.use(urlencoded({ extended: true }))
+app.use(cookieSession(cookieOptions))
 
+app.use('/site', express.static('public'))
 
 app.get('/', (req, res) => {
   const { protocol, hostname } = req

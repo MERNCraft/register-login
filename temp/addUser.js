@@ -20,7 +20,7 @@ const addUser = async (req) => {
     status: function() { return this },
     // Instead of sending a response to a (non-existent) client,
     // simply log the message that would be sent.
-    send: ({ message }) => console.log(message)
+    send: (message) => console.log(message)
   }
 
 

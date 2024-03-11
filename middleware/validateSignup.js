@@ -1,4 +1,4 @@
-const { User } = require('../../database')
+const { User } = require('../database')
 
 
 const validateSignup = async (req, res, next) => {
@@ -75,7 +75,7 @@ const validateSignup = async (req, res, next) => {
   }
 
   function checkPassword() {
-    if (!status && !password || typeof password !== "string") {
+    if (!status && !password) { //|| typeof password !== "string") {
       treatInvalid({ password })
 
     } else {

@@ -154,8 +154,15 @@ function signUp(req) {
 
 
   const treatSuccess = (user) => {
-    message = `Document added to User collection
-${JSON.stringify(user, null, '  ')}`
+    const { username, email } = user
+    message = {
+      message: "User record created",
+      user: {
+        username,
+        email
+      }
+    }
+    message = JSON.stringify(message, null, "  ")
   }
 
 
@@ -246,13 +253,13 @@ module.exports = db
 
 > ```
 > Connected to mongodb://localhost:27017/register  
-> Document added to User collection {  
->   "username": "to_be_deleted",  
->   "email": "delete@example.com",  
->   "hash": "$2a$08$uXepGz.> RZ8qVg9JZqxBcZu5QEwqXFEwymd1otNPAp4GbRfGPvFNV6",  
->   "_id": "65e71c4ff17f18ac8e554336",  
->   "__v": 0  
-> }
+> {
+>    message: 'User record created',
+>    user: {
+>      username: 'to_be_deleted',
+>      email: 'delete@example.com'
+>    }
+>  }
 > ```
 4. To view the newly created document(s), in new Terminal window run:
 ```
@@ -281,7 +288,7 @@ db.users.drop()
 >```
 
 ## 5. Validate the data used to create a User document
-1. Create `middleware/validation/signup.js` to check whether:
+1. Create `middleware/validationSignup.js` to check whether:
    * The given username is a non-empty string
    * The given username already exists
    * The given email is valid
@@ -289,7 +296,7 @@ db.users.drop()
    * The password is a non-empty string
   
 ```javascript
-const { User } = require('../../database')
+const { User } = require('../database')
 
 
 const validateSignup = async (req, res, next) => {
@@ -328,7 +335,7 @@ const validateSignup = async (req, res, next) => {
 
   const treatDBError = error => {
     status = 500 // Internal Server Error
-    message = error
+    message = { error: error.message }
   }
 
   // Start the chain of checks
@@ -366,7 +373,7 @@ const validateSignup = async (req, res, next) => {
   }
 
   function checkPassword() {
-    if (!status && !password || typeof password !== "string") {
+    if (!status && !password ) {
       treatInvalid({ password })
 
     } else {
@@ -377,7 +384,7 @@ const validateSignup = async (req, res, next) => {
   function proceed() {
     if (status) {
       // There was an error in the input values 
-      res.status(status).send({ message })
+      res.status(status).send(message)
 
     } else {
       // No error: time to create a new user
@@ -392,61 +399,14 @@ module.exports = validateSignup
 
 2. Create `middleware/index.js`:
 ```javascript
-const validateSignup = require('./validation/signup')
+const validateSignup = require('./validationSignup')
 
 module.exports = {
   validateSignup
 }
 ```
 
-3. Edit `controllers/signup.js`
-```javascript
-const bcrypt = require('bcryptjs')
-const { User } = require('../database')
-
-
-function signUp(req, res) {
-  const { username, email, password } = req.body
-
-  const hash = bcrypt.hashSync(password, 8)
-  const options = { username, email, hash }
-
-  let status = 0
-  let message
-
-
-  const treatSuccess = (user) => {
-    message = `Document added to User collection
-${JSON.stringify(user, null, '  ')}`
-  }
-
-
-  const treatError = error => {
-    status = 500 // Server Error
-    message = error
-  }
-
-
-  const proceed = () => {
-    if (status) {
-      res.status(status)
-    } // else status will be set to 200 by default
-
-    res.send({ message })
-  }
-
-
-  return new User(options)
-    .save()
-    .then(treatSuccess)
-    .catch(treatError)
-    .finally(proceed)
-}
-
-
-module.exports = signUp
-```
-4. Edit `temp/addUser.js` to check whether the given data is valid. This script is complex, because it tests all the different validation errors that could occur.
+3. Edit `temp/addUser.js`
 ```javascript
 const { validateSignup } = require('../middleware')
 const { signUp } = require('../controllers')
@@ -455,7 +415,7 @@ const { signUp } = require('../controllers')
 const addUser = async (req) => {
   const res = {
     status: function() { return this },
-    send: ({ message }) => console.log(message)
+    send: (message) => console.log(message)
   }
 
 
@@ -463,6 +423,7 @@ const addUser = async (req) => {
     const next = () => {
       resolve(req)
     }
+
     const send = function(message) {
       reject(message)
     }
@@ -496,7 +457,6 @@ req.body: ${JSON.stringify(req, null, "  ")}`
     .then(treatResolution)
     .catch(({ message }) => treatRejection(req, message))
 }
-
 
 
 const requests = [
@@ -566,13 +526,11 @@ const requests = [
 ]
 
 
-
 async function addUsers(){
   for (const req of requests) {
     await addUser(req)
   }
 }
-
 
 
 module.exports = addUsers
@@ -582,33 +540,33 @@ module.exports = addUsers
 5. Stop the server: activate the Terminal window where the server is running and press Ctrl-C.
 6. Restart the server: `npm start`.
 
+> ```
 > Express server listening at:  
->   http://localhost:5555  
->   http://127.0.0.1:5555  
->   http://192.168.0.10:5555  
+>   http://localhost:5555  
+>   http://127.0.0.1:5555  
+>   http://192.168.0.10:5555  
 >
 > Connected to mongodb://localhost:27017/register  
-> SUCCESS: create user 'to_be_deleted'  
-> SUCCESS: no username (should fail)  
-> Document added to User collection  
-> {  
->   "username": "to_be_deleted",  
->   "email": "delete@example.com",  
->   "hash": "$2a$08$LWzMxA.WWK6Oj9qzxxCAJ.U8.PechSjDq8gmjD9XFSYkebNT1v.Su",  
->   "_id": "65ea0689afee055eb6772960",  
->   "__v": 0  
-> }  
-> SUCCESS: no email (should fail)  
-> SUCCESS: invalid email (should fail)  
-> SUCCESS: no password (should fail)  
-> SUCCESS: duplicate username (should fail)  
+> SUCCESS: create user 'to_be_deleted'
+> SUCCESS: no username (should fail)
+> {
+>   message: 'User record created',
+>   user: {
+>     username: 'to_be_deleted',
+>     email: 'delete@example.com'
+>   }
+> } 
+> SUCCESS: no email (should fail)
+> SUCCESS: invalid email (should fail)
+> SUCCESS: no password (should fail)
+> SUCCESS: duplicate username (should fail)
 > SUCCESS: duplicate email (should fail)
+> ```
 
 ## 6. Add a route for the signup process
 1. In `database/index.js`, comment out the temporary test command:
 ```javascript
     // require('../temp/addUser')()
-
 ```
 2. Create `routes/authorization.js`
 ```javascript
@@ -624,7 +582,7 @@ const routes = app => {
 module.exports = routes
 ```
 
-2. Edit these lines near the beginning of `server.js`
+3. Edit these lines near the beginning of `server.js`
 ```javascript
 const express = require('express')
 const { json, urlencoded } = express    // NEW LINE
@@ -634,9 +592,551 @@ app.use(json())                         // NEW LINE
 app.use(urlencoded({ extended: true })) // NEW LINE
 ```
 
-3. Add this line to `server.js`
+4. Add this line to `server.js`
 ```javascript
 require('./routes/authorization')(app)  // NEW LINE
 
 app.listen(PORT, logStuffToConsole)
+```
+
+> If you use an API Tester (Postman, Insomnia, Thunder > Client, ...), you can already check if your `signup` route is workning. Make a POST request to http://> localhost:5555/signup with the JSON payload `{ "username": "me", > "email": "me@example.com", "password": "my_password" }`
+>    
+> The response should be something like:
+> > Status: 200 OK
+> > ```
+> > {
+>     "message": "User record created",
+>     "user": {
+>       "username": "me",
+>       "email": "me@example.com"
+>     }
+>   }
+> > ```
+> 
+> Send the request again:
+> > Status: 400
+> > ```
+> > {
+> >   "message": "FAIL: username \"me\" is already taken"
+> > }
+> > ```
+
+## 7. Add a signup page 
+1. Create a new file at `public/site/signup/index.html`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <style>
+    body { 
+      min-height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    form {
+      width: 12em;
+      background-color: #222;
+      color: #ddd;
+      padding: 1em;
+      border-radius: 1em;
+    }
+    label {
+      display: block;
+      margin-bottom: 1em;
+    }
+    span {
+      display: block;
+      width: 5em;
+    }
+    input:invalid {
+      border: 1px solid #f00;
+    }
+    form:invalid button {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+  </style> 
+</head>
+
+<body>
+  <form
+    id="register"
+  >
+    <label for="username">
+      <span>Username:</span>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        value=""
+        required
+      />
+    </label>
+    <label for="email">
+      <span>Email:</span>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value=""
+        required
+      />
+    </label>
+    <label for="password">
+      <span>Password:</span>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        value=""
+        required
+      />
+    </label>
+    <button
+      type="submit"
+    >
+      Register
+    </button>
+  </form>
+
+  <script>
+  ;(function () {
+    "use strict"
+    const url = "http://localhost:5555/signup"
+    const form = document.getElementById("register")
+
+    form.onsubmit = event => {
+      event.preventDefault()
+      const formData = new FormData(form)
+      const body = JSON.stringify(
+        Object.fromEntries(formData)
+      )    
+      
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body,
+      }
+
+      fetch(url, options)
+        .then(response => response.json())
+        .then(json => console.log("fetch response:", json))
+        .catch(error => console.log("error:", error))
+    }
+  })()
+  </script> 
+</body>
+</html>
+```
+
+2. Add a line to `server.js`
+```javascript
+app.use(json())
+app.use(urlencoded({ extended: true }))
+app.use('/site', express.static('public')) // NEW LINE
+```
+3. Visit [http://localhost:5555/site/signup/](http://localhost:5555/site/signup/) in your browser
+4. Open the Console tab in the Developer Tools
+5. Use the form to send a POST request to [http://localhost:5555/signup](http://localhost:5555/signup)
+6. Check the result in the browser Console
+```
+fetch response: 
+{ message: "User record created",
+  user: { username: "me", email: "me@example.com" }}
+```
+7. Submit the form again:
+```
+POST http://localhost:5555/signup [HTTP/1.1 400 Bad Request]
+fetch response: 
+{ message: 'FAIL: username "me" is already taken' }
+```
+
+## 8. Add a route and a form for logging in
+1. Add two lines to `.env`
+```
+JWT_SECRET="go hang a salami"
+COOKIE_SECRET="cannot be undefined"
+```
+You should use your own strings and keep them secret. These secrets are used to encrypt JSON Web Tokens (JWT or "joot" tokens") that will be sent to your client as a cookie.
+
+2. Create `controllers/signin.js`
+3. Edit `controllers/index.js` to look like this:
+```javascript
+const signUp = require('./signup')
+const signIn = require('./signin') // NEW LINE
+
+module.exports = {
+  signUp,
+  signIn                           // NEW LINE
+}
+```
+4. Add `controllers/signin.js`:
+```javascript
+const bcrypt = require('bcryptjs')
+const { User } = require('../database')
+const { makeToken } = require('../middleware')
+
+
+function signIn(req, res) {
+  const { username, email, id, password } = req.body
+  // id, here, is either username or password
+
+  let status = 0
+  let message = ""
+
+
+  // Allow user to log in with either username or email
+  const promises = [
+    findUser({ email }),
+    findUser({ username }),
+    findUser({ email: id }),
+    findUser({ username: id })
+  ]
+
+
+  function findUser(query) {
+    return new Promise((resolve, reject ) => {
+      User.findOne(query).exec()
+      .then(checkPassword)
+      .catch(reject)
+      
+      function checkPassword(user) {
+        if (user) {
+          const pass = bcrypt.compareSync(password, user.hash)
+          if (pass) {
+            return resolve(user)
+          }
+        }
+
+        reject()
+      }
+    })
+  }
+
+
+  const treatSuccess = user => {
+    const { id } = user
+    // id, here, is the unique value stored in MongoDB
+    const token = makeToken({ id })
+    req.session.token = token
+    message = { success: "Logged in!" }
+  }
+
+
+  const treatError = error => {
+    // TODO: log error
+    status = 401 // Unauthorized
+    message = { fail: "Invalid login credentials" }
+  }
+
+
+  const proceed = () => {
+    if (status) {
+      res.status(status)
+    }
+
+    res.send(message)
+  }
+
+
+  const fullfilled = Promise.any(promises)
+  fullfilled
+    .then(treatSuccess)
+    .catch(treatError)
+    .finally(proceed)
+}
+
+
+module.exports = signIn
+```
+5. Add `middleware/jwToken.js`:
+```javascript
+const jwt = require("jsonwebtoken")
+const JWT_SECRET = process.env.JWT_SECRET
+
+const DEFAULTS = {
+  algorithm: 'HS256',
+  allowInsecureKeySizes: true,
+  expiresIn: 86400, // 24 hours
+}
+
+
+const makeToken = ( payload, options = {} ) => {
+  if (typeof options !== "object") {
+    // Ignore not-object options
+    options = {}
+  }
+
+  options = { ...DEFAULTS, ...options }
+
+  // <<< Remove entries that can be in payload OR in options,
+  // but not in both places. If this is not done, jwt.sign()
+  // will throw an error.
+  const onlyOne = {
+    exp: "expiresIn",
+    nbf: "notBefore",
+    aud: "audience",
+    sub: "subject",
+    iss: "issuer"
+  }
+
+  Object.entries(onlyOne).forEach(( [ pay, opt ]) => {
+    if (pay in payload) {
+      delete options[opt]
+    }
+  })
+  // Remove >>>
+
+  const token = jwt.sign(
+    payload,
+    JWT_SECRET,
+    options
+  )
+  
+  return token
+}
+
+
+const verifyToken = (req, res, next) => {
+  const token = req.session.token
+
+  // If status and message remain falsy, username, email and
+  // roles are all valid; proceed() will call next(). If not,
+  // proceed() will call res.status(status).send({ message }).
+  let status = 0
+  let message = ""
+
+  if (!token) {
+    status = 403 // Forbidden
+    message = "No token provided"
+    proceed()
+
+  } else {
+    jwt.verify(token, JWT_SECRET, treatVerification)
+  }
+
+  function treatVerification(error, { id }) {
+    if (error) {
+      status = 401 // Unauthorized
+      message = "Unauthorized"
+
+    } else {
+      req.userId = id
+      proceed()
+    }
+  }
+
+  function proceed() {
+    if (status) {
+      return res.status(status).send({ message })
+    }
+
+    next()
+  }
+}
+
+
+module.exports = {
+  makeToken,
+  verifyToken
+}
+```
+
+6. Edit `middleware/index.js` so that it looks like this:
+```javascript
+const validateSignup = require('./validateSignup')
+const { makeToken } = require('./jwToken') // NEW LINE
+
+module.exports = {
+  validateSignup,
+  makeToken                                // NEW LINE
+}
+```
+
+6. Edit `routes/authorization.js`, so that it looks like this:
+```javascript
+const {
+  validateSignup
+} = require('../middleware')
+const {
+  signUp,
+  signIn                        // NEW LINE
+} = require('../controllers')
+
+
+const routes = app => {
+  app.post('/signup', [ validateSignup, signUp ])
+
+  app.post('/signin', signIn )  // NEW LINE
+}
+
+
+module.exports = routes
+```
+
+7. Edit `server.js`, with these lines, to activate cookies:
+```
+const PORT = process.env.PORT || 3000
+const COOKIE_SECRET = process.env.COOKIE_SECRET || ""
+
+const express = require('express')
+const { json, urlencoded } = express
+const cookieSession = require('cookie-session')
+
+const app = express()
+
+const cookieOptions = {
+  name: "cookie-session",
+  keys: [ COOKIE_SECRET ],
+  httpOnly: true,
+  sameSite: true
+}
+
+app.use(json())
+app.use(urlencoded({ extended: true }))
+app.use(cookieSession(cookieOptions))
+
+app.use('/site', express.static('public'))
+```
+8. Create a new file at `public/signin/index.html`:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In</title>
+  <style>
+    body {
+      min-height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    form {
+      width: 12em;
+      background-color: #222;
+      color: #ddd;
+      padding: 1em;
+      border-radius: 1em;
+    }
+    label {
+      display: block;
+      margin-bottom: 1em;
+    }
+    span {
+      display: block;
+      /* width: 5em; */
+    }
+    input:invalid {
+      border: 1px solid #f00;
+    }
+    form:invalid button {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+  </style>
+</head>
+
+<body>
+  <form
+    id="sign-in"
+  >
+  <label for="username">
+    <span>Username:</span>
+    <input
+      type="text"
+      id="username"
+      name="username"
+      value=""
+    />
+  </label>
+  <label for="email">
+    <span>Email:</span>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      value=""
+    />
+  </label>
+  <label for="id">
+    <span>Username OR Email:</span>
+    <input
+      type="text"
+      id="id"
+      name="id"
+      value=""
+    />
+  </label>
+    <label for="password">
+      <span>Password:</span>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        value=""
+        required
+      />
+    </label>
+    <button
+      type="submit"
+    >
+      Sign In
+    </button>
+  </form>
+
+  <script>
+  ;(function () {
+    "use strict"
+    const url = "http://localhost:5555/signin"
+    const form = document.getElementById("sign-in")
+
+    form.onsubmit = event => {
+      event.preventDefault()
+      const formData = new FormData(form)
+
+      const replacer = (key, value) => {
+        return !!value ? value : undefined
+      }
+
+      const body = JSON.stringify(
+        Object.fromEntries(formData), replacer, ""
+      )
+      console.log("body:", body);
+
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body,
+      }
+
+      fetch(url, options)
+        .then(response => response.json())
+        .then(json => console.log("signin response:", json))
+        .catch(error => console.log("error:", error))
+    }
+  })()
+  </script>
+</body>
+</html>
+```
+
+9. Visit the page at [http://localhost:5555/site/signin](http://localhost:5555/site/signin)
+10. Fill in any _one_ of the fields `Username`, `Email`, `Username OR Email` with the contact details of a User that you created earlier.
+11. Enter the correct password for this User, and press Sign In
+12. Look in the Developer Console. You should see something like:
+```
+body: {"id":"me","password":"pass"}
+signin response: Object { success: "Logged in!" }
 ```

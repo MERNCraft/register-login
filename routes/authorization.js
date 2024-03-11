@@ -1,9 +1,16 @@
-const { validateSignup } = require('../middleware')
-const { signUp } = require('../controllers')
+const {
+  validateSignup
+} = require('../middleware')
+const {
+  signUp,
+  signIn
+} = require('../controllers')
 
 
 const routes = app => {
   app.post('/signup', [ validateSignup, signUp ])
+
+  app.post('/signin', signIn )
 }
 
 

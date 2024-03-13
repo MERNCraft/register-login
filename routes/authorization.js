@@ -3,7 +3,8 @@ const {
 } = require('../middleware')
 const {
   signUp,
-  signIn
+  signIn,
+  signOut
 } = require('../controllers')
 
 
@@ -11,6 +12,8 @@ const routes = app => {
   app.post('/signup', [ validateSignup, signUp ])
 
   app.post('/signin', signIn )
+
+  app.post('/signout', signOut )
 }
 
 

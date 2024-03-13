@@ -21,7 +21,7 @@ app.use(json())
 app.use(urlencoded({ extended: true }))
 app.use(cookieSession(cookieOptions))
 
-app.use('/site', express.static('public'))
+app.use('/', express.static('public'))
 
 app.get('/', (req, res) => {
   const { protocol, hostname } = req
@@ -31,6 +31,7 @@ ${Date()}</pre>`)
 
 
 require('./routes/authorization')(app);
+require('./routes/content')(app);
 
 
 app.listen(PORT, logStuffToConsole)

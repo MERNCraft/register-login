@@ -622,7 +622,7 @@ app.listen(PORT, logStuffToConsole)
 > > ```
 
 ## 7. Add a signup page 
-1. Create a new file at `public/site/signup/index.html`
+1. Create a new file at `public/sign/up/index.html`
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -707,7 +707,7 @@ app.listen(PORT, logStuffToConsole)
   <script>
   ;(function () {
     "use strict"
-    const url = "http://localhost:5555/signup"
+    const url = "/signup"
     const form = document.getElementById("register")
 
     form.onsubmit = event => {
@@ -740,18 +740,18 @@ app.listen(PORT, logStuffToConsole)
 ```javascript
 app.use(json())
 app.use(urlencoded({ extended: true }))
-app.use('/site', express.static('public')) // NEW LINE
+app.use('/', express.static('public')) // NEW LINE
 ```
-3. Visit [http://localhost:5555/site/signup/](http://localhost:5555/site/signup/) in your browser
-4. Open the Console tab in the Developer Tools
-5. Use the form to send a POST request to [http://localhost:5555/signup](http://localhost:5555/signup)
-6. Check the result in the browser Console
+1. Visit [http://localhost:5555/sign/up](http://localhost:5555/sign/up/) in your browser
+2. Open the Console tab in the Developer Tools
+3. Use the form to send a POST request to [http://localhost:5555/signup](http://localhost:5555/signup)
+4. Check the result in the browser Console
 ```
 fetch response: 
 { message: "User record created",
   user: { username: "me", email: "me@example.com" }}
 ```
-7. Submit the form again:
+1. Submit the form again:
 ```
 POST http://localhost:5555/signup [HTTP/1.1 400 Bad Request]
 fetch response: 
@@ -1097,7 +1097,7 @@ app.use('/site', express.static('public'))
   <script>
   ;(function () {
     "use strict"
-    const url = "http://localhost:5555/signin"
+    const url = "/signin"
     const form = document.getElementById("sign-in")
 
     form.onsubmit = event => {
@@ -1132,11 +1132,256 @@ app.use('/site', express.static('public'))
 </html>
 ```
 
-9. Visit the page at [http://localhost:5555/site/signin](http://localhost:5555/site/signin)
-10. Fill in any _one_ of the fields `Username`, `Email`, `Username OR Email` with the contact details of a User that you created earlier.
-11. Enter the correct password for this User, and press Sign In
-12. Look in the Developer Console. You should see something like:
+1. Visit the page at [http://localhost:5555/sign/in](http://localhost:5555/sign/in)
+2.  Fill in any _one_ of the fields `Username`, `Email`, `Username OR Email` with the contact details of a User that you created earlier.
+3.  Enter the correct password for this User, and press Sign In
+4.  Look in the Developer Console. You should see something like:
 ```
 body: {"id":"me","password":"pass"}
 signin response: Object { success: "Logged in!" }
 ```
+1.  Inspect the cookies that were sent to the browser:
+Firefox: Storage > Cookies > http://localhost:5555
+Chrome + Edge: Application > Storage > Cookies  > http://localhost:5555
+
+1.  Copy the `cookie-session` cookie data. It should look something like this:
+```
+eyJ0b2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpwWkNJNklqWTFaV1l4TlRjM00yRmpPVE5oTVRKbE5qZzJNREZtT0NJc0ltbGhkQ0k2TVRjeE1ERTJOemM0T1N3aVpYaHdJam94TnpFd01qVTBNVGc1ZlEuRklHUlRxT2dma2VZa3dxR0o2XzNiUi1RNmhQT2VQVk5GR042YWR4YXQtbyJ9
+```
+
+1.  Open [https://jwt.io/](https://jwt.io/) and scroll down to the Debugger section.
+
+2.   Paste the `cookie-session` cookie data into the "Encoded" field.
+![Decoding the cookie-session data](images/cookie-session.jpg)
+
+1.   You should see that the decoded `"header"` contains an entry with the key `token`. Copy this (without the quote marks) and paste it in the Encoded field. You should see that the payload in the Decoded field shows the `id` from the User record created by Mongoose. (The values that you see will be different.)
+![User id in token](images/token-id.jpg)
+
+## 9. Add an API route for logging out
+1. Add a file at `controller/signout.js`
+```javascript
+function signOut(req, res) {
+  let status = 0
+  let message
+
+  try {
+    req.session = null
+    message = { success: "Logged out." }
+
+  } catch(error) {
+    message = error
+  }
+
+  if (status) {
+    res.status(status)
+  }
+
+  res.send(message)
+}
+
+
+module.exports = signOut
+```
+2. Add two lines to `controllers/index.js`:
+```javascript
+const signUp = require('./signup')
+const signIn = require('./signin')
+const signOut = require('./signout')  // NEW LINE
+const { public, user } = require('./content')
+
+module.exports = {
+  signUp,
+  signIn,
+  signOut,                            // NEW LINE
+  public,
+  user
+}
+```
+3. Add two lines to `routes/authorization.js`:
+```javascript
+const {
+  validateSignup
+} = require('../middleware')
+const {
+  signUp,
+  signIn,
+  signOut                        // NEW LINE
+} = require('../controllers')
+
+
+const routes = app => {
+  app.post('/signup', [ validateSignup, signUp ])
+
+  app.post('/signin', signIn )
+
+  app.post('/signout', signOut ) // NEW LINE
+}
+
+
+module.exports = routes
+```
+4. Add a file at public/sign/out/index.html:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In</title>
+  <style>
+    body {
+      min-height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <form
+    id="sign-out"
+  >
+    <button
+      type="submit"
+    >
+      Sign Out
+    </button>
+  </form>
+
+  <script>
+  ;(function () {
+    "use strict"
+    const url = "/signout"
+    const form = document.getElementById("sign-out")
+
+    form.onsubmit = event => {
+      event.preventDefault()
+      const formData = new FormData(form)
+
+      const options = {
+        method: "POST"
+      }
+
+      fetch(url, options)
+        .then(response => response.json())
+        .then(json => console.log("signout response:", json))
+        .catch(error => console.log("signout error:", error))
+    }
+  })()
+  </script>
+</body>
+</html>
+```
+
+5. In your browser, visit [http://localhost:5555/sign/out/](http://localhost:5555/sign/out/)
+6. Click the Sign Out button
+7. Observe the output in the Developer Console
+8. Note that the cookies for `http://localhost:5555` have been deleted
+
+## 10. Access privileged data as a logged-in user
+
+1. Edit the file at `middleware/jwToken.js`:
+```javascript
+
+const verifyToken = (req, res, next) => {
+  const token = req.session.token
+
+  // If status and message remain falsy, username, email and
+  // roles are all valid; proceed() will call next(). If not,
+  // proceed() will call res.status(status).send({ message }).
+  let status = 0
+  let message = ""
+
+  if (!token) {
+    status = 403 // Forbidden
+    message = "No token provided"
+    proceed()
+
+  } else {
+    jwt.verify(token, JWT_SECRET, treatVerification)
+  }
+
+  function treatVerification(error, { id }) {
+    if (error) {
+      status = 401 // Unauthorized
+      message = "Unauthorized"
+
+    } else {
+      req.userId = id
+      proceed()
+    }
+  }
+
+  function proceed() {
+    if (status) {
+      return res.status(status).send({ message })
+    }
+
+    next()
+  }
+}
+
+
+module.exports = {
+  makeToken,
+  verifyToken
+}
+```
+
+2. Edit `middleware/index.js`:
+```javascript
+const validateSignup = require('./validateSignup')
+const { makeToken, verifyToken } = require('./jwToken')
+
+module.exports = {
+  validateSignup,
+  makeToken,
+  verifyToken
+}
+```
+
+3. Add a file at `controllers/content.js`:
+```javascript
+exports.public = (req, res) => {
+  res.status(200).send("Public Content")
+};
+
+exports.user = (req, res) => {
+  res.status(200).send("User Content")
+}
+```
+
+4. Add a file at `routes/content.js`:
+```javascript
+const { verifyToken } = require("../middleware")
+const { public, user } = require("../controllers")
+
+module.exports = function(app) {
+  app.get("/public", public)
+
+  app.get("/user", [verifyToken], user)
+}
+```
+
+5. Add a line to `server.js`:
+```javascript
+
+require('./routes/authorization')(app);
+require('./routes/content')(app); // NEW LINE
+
+
+app.listen(PORT, logStuffToConsole)
+```
+
+6. In your browser, visit [http://localhost:5555/public](http://localhost:5555/public). You should see the text:
+> Public Content
+
+7. Visit [http://localhost:5555/user](http://localhost:5555/user). Because you are currently not logged in, you should see something like:
+> `{"message":"No token provided"}`
+
+8. Visit [http://localhost:5555/sign/in/](http://localhost:5555/sign/in/) and sign in using the credentials of a User that you created earlier.
+
+9.  Now visit [http://localhost:5555/user](http://localhost:5555/user). This time you should see:
+> User Content

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In</title>
+  <style>
+    body {
+      min-height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+  <form
+    id="sign-out"
+  >
+    <button
+      type="submit"
+    >
+      Sign Out
+    </button>
+  </form>
+
+  <script>
+  ;(function () {
+    "use strict"
+    const url = "/signout"
+    const form = document.getElementById("sign-out")
+
+    form.onsubmit = event => {
+      event.preventDefault()
+      const formData = new FormData(form)
+
+      const options = {
+        method: "POST"
+      }
+
+      fetch(url, options)
+        .then(response => response.json())
+        .then(json => console.log("signout response:", json))
+        .catch(error => console.log("signout error:", error))
+    }
+  })()
+  </script>
+</body>
+</html>

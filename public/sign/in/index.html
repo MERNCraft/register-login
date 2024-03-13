@@ -88,7 +88,7 @@
   <script>
   ;(function () {
     "use strict"
-    const url = "http://localhost:5555/signin"
+    const url = "/signin"
     const form = document.getElementById("sign-in")
 
     form.onsubmit = event => {
@@ -115,7 +115,7 @@
       fetch(url, options)
         .then(response => response.json())
         .then(json => console.log("signin response:", json))
-        .catch(error => console.log("error:", error))
+        .catch(error => console.log("signin error:", error))
     }
   })()
   </script>

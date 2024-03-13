@@ -18,8 +18,8 @@ mongoose
   .then(() => {
     console.log(`Connected to ${DB}`)
 
-    // Temporary test to show that the database works
-    require('../temp/addUser')()
+    // // Temporary test to show that the database works
+    // require('../temp/addUser')()
 
   })
   .catch( error => {

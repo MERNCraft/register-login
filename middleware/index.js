@@ -1,7 +1,8 @@
 const validateSignup = require('./validateSignup')
-const { makeToken } = require('./jwToken')
+const { makeToken, verifyToken } = require('./jwToken')
 
 module.exports = {
   validateSignup,
-  makeToken
+  makeToken,
+  verifyToken
 }

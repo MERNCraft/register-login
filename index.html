@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register and Log In</title>
+
+  <link rel="stylesheet" href="tutorial/menu.css">
+  <link rel="stylesheet" href="tutorial/content.css">
+  <link rel="stylesheet" href="tutorial/prism/prism.css">
+
+  <script defer src="tutorial/script.js"></script>
+  <script defer src="tutorial/prism/prism.js"></script>
+</head>
+
+<body>
+<main id="main">
+<header>
+<h1>User Registration and Log In</h1>
+<h3>using Express, Mongoose and JSON Web Tokens</h3>
+</header>
+
+<section
+id="bare-bones-server"
+data-item="Basic Express Server"
+>
+<h2>A Bare-bones Express Server</h2>
+<p>You can start by creating an empty directory called <code>backend</code>. In a Terminal window type the following commands:</p>
+<pre><code class="language-bash">mkdir backend && cd backend</code></pre>
+<aside class="vscode">
+  <p>If you are working with VS Code, you can open the current folder in a VS Code window with the command:</p>
+  <pre><code class="language-bash"
+  >code -r .</code></pre>
+  <p><code>code</code> tells the VS Code app that it should react to this command. The <code>-r</code> tells VS Code to <i>reuse</i> the current window. This only has an effect if you were already working in VS Code. If you use this in a System Terminal window, it will simply be ignored. The <code>.</code> indicates <i>the current directory</i>, or the <code>backend</code> directory that you created in the line before.</p>
+</aside>
+<h4>Installing Third-Party Node Modules</h4>
+<p>In order to take advantage of the wealth of existing code that other developers have written for Node.js, you need to create a file called <code>package.json</code> at the root of your project. The following command will create this file. The <code>-y</code> flag means saying "Yes" to all the default values that <code>npm init</code> proposes.</p>
+<pre><code class="language-bash">npm init -y</code></pre>
+<p>You should now have a file called <code>package.json</code> that looks like this:</p>
+<pre>
+<code class="language-json line-numbers"
+>{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}</code></pre>
+<p>One default value that you should change is that for <code>"main"</code>. In a moment, you will be creating a file called <code>server.js</code> to hold all the code for your server, so you should change the value of <code>"main"</code> as shown below.</p>
+<p>This won't actually affect the way your project runs, it's just polite to tell other developers who need to look at your project where to look for the main file. You can also add a description and some keywords if you want.</p>
+<pre>
+  <code class="language-json line-numbers"
+  ><i>{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "", </i>
+    <b>"main":</b> "server.js",<i>
+    "scripts": ...</i></code></pre>
+<p>This project requires a number of open-source Node modules.</p>
+
+<ul>
+  <li><a href="https://expressjs.com/" class="external">Express</a><span></span> is a framework for building a server on top of NodeJS's built in <a href="https://nodejs.org/api/http.html" class="external">HTTP</a><span></span> module.</li>
+  <li><a href="https://mongoosejs.com/" class="external">Mongoose</a><span></span> provides an elegant way of communicating with a <a href="https://www.mongodb.com/" class="external">MongoDB</a><span></span> database</li>
+  <li><a href="https://www.npmjs.com/package/bcryptjs" class="external">bcryptjs</a><span></span> is a JavaScript implementation of a secure algorithm for hashing passwords, so that you never need to save unencrypted passwords on your server</li>
+  <li><a href="https://jwt.io/" class="external">JSON Web Tokens</a><span></span> (also known as JWT tokens, where JWT is pronounced "joot") allow you to send authorization data between the browser and the server</li>
+  <li><a href="https://www.npmjs.com/package/cookie-session" class="external">cookie-session</a><span></span> helps Express send and receive the cookie that contains the JWT token that authorizes your end user to log in.</li>
+  <li><a href="https://www.npmjs.com/package/dotenv" class="external">dotenv</a><span></span> reads in data from a private <code>.env</code> file that contains any secrets that you do not want to share with others.</li>
+</ul>
+<p>The following command will download all these modules, and the modules that they depend on, into a directory called <code>node_modules.</code>. The <code>i</code> is short for <code>install</code>.</p>
+<pre><code class="language-bash">npm i bcryptjs cookie-session dotenv express jsonwebtoken mongoose</code>
+</pre>
+<p>This command will take some time to run, depending on your Internet connection speed. When it has finished, there will be a new directory named <code>node_modules</code> and a new file named <code>package-lock.json</code>. Your <code>package.json</code> file should look something this:</p>
+<img src="tutorial/images/node_modules.png" alt="package.json after running npm install">
+<aside>
+  <p>The version numbers may be different for you.</p>
+</aside>
+<p>The <code>package-lock.json</code> file contains a detailed list of every file that was downloaded into your <code>node_modules</code> directory. If you share this file with your collaborators, they will be able to download the exact same files into their own development environment, so you will all be working with exactly the same third-party code.</p>
+<p>Open the <code>node_modules</code> directory, to see all the files that it now contains. On my computer, it contains over 12 MB of code files, even before you've written a line of code yourself.</p>
+<h4>Writing Your Own Express Server</h4>
+<p>Create a file called `server.js` at the root of your project:</p>
+<pre>
+<code class="language-javascript line-numbers"
+>const express = require('express')
+const app = express()
+
+
+app.get('/', (req, res) => {
+  res.send("Hello from Express")
+})
+
+
+app.listen(3000)</code></pre>
+<p>This is the simplest possible Express server. In the Terminal, run the following command to launch your server:</p>
+<pre><code class="language-bash"
+>node server.js</code></pre>
+<p>If you open your browser and visit <a href="http://localhost:3000">http://localhost:3000</a>, you should see <code>Hello from Express</code>. This shows that your server is working.</p>
+<aside class="tip">
+  <p>"Test early, test often, test on all your target devices."</p>
+  <p>This is a good mantra to follow. Take small steps, and make sure that everything is working the way you expect before continuing to the next step.</p>
+</aside>
+</section>
+
+<section
+  id="friendly-server"
+  data-item="A Better Server"
+>
+  <h2>A More Self-Aware Server</h2>
+  <p>Now that you know that your server can serve data to your browser, you can make it tell you more about what it's doing. With the code listing below:</p>
+  
+  <ul>
+    <li>I create a specific <code>PORT</code> variable to hold the number of the port that the server should use.</li>
+    <li>I get the <i>request</i> object (<code>req</code>) to tell me which protocol and hostname the client requested. And I add to this the <code>PORT</code> number that I defined earlier.</li>
+    <li>I also use a <code>Date</code> object to get the current date and time-zone of the server</li>
+    <li>I use the <i>response</i> object (<code>res</code>) to send a message back to the browser with this useful information, all prettily wrapped up in an HTML <code>&lt;pre&gt;</code> tag.</li>
+    <li>Finally, I use a callback function (<code>logStuffToConsole</code>) to gather information from the operating system so that I can print out in the Terminal all the different URLs that the server is connected to. This uses some quite advanced techniques that you won't need to use in other places, so you can simply admire the result in your Terminal (see below).</li>
+  </ul>
+<pre>
+<code class="language-javascript line-numbers"
+>const PORT = 3000
+<i>const express = require('express')
+const app = express()
+
+
+app.get('/', (req, res) => {</i>
+  const { protocol, hostname } = req
+  <i>res.send(</i>`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
+${Date()}&lt;/pre&gt;`<i>)
+})
+
+
+app.listen(</i>PORT, logStuffToConsole<i>)</i>
+
+
+function logStuffToConsole() {
+  const nets = require("os").networkInterfaces()
+  const ips = Object.values(nets)
+  .flat()
+  .filter(({ family }) => (
+    family === "IPv4")
+  )
+  .map(({ address }) => address)
+  ips.unshift("localhost")
+
+  const hosts = ips.map( ip => (
+    `http://${ip}:${PORT}`)
+  ).join("\n  ")
+  console.log(`Express server listening at:
+  ${hosts}
+  `);
+}</code></pre>
+  
+
+<p>Stop the current instance of your server by activating the Terminal window and pressing <code>Ctrl-C</code>. Then press the Up arrow on your keyboard, to display the last command that you executed (<code>node server.js</code>), and press Enter.</p>
+  
+<pre><code class="language-bash"
+>^C
+backend % node server.js 
+Express server listening at:
+  http://localhost:3000
+  http://127.0.0.1:3000
+  http://192.168.0.12:3000
+  http://192.168.0.10:3000</code></pre>
+
+<p><code>Ctrl-click</code> or <code>Cmd-click</code> on any of the host names. Your browser should open and display something like:</p>
+<blockquote><pre>
+  Connected to http://localhost:3000
+  Thu Mar 07 2024 21:03:21 GMT+0100 (Central European Time)
+</pre></blockquote>  
+</section>
+
+<section
+  id="nodemon"
+  data-item="Automatic Restart"
+>
+<h2>Automatically Restarting Your Server with Nodemon</h2>
+<p>It can become tedious to stop your server and restart it every time you change the script. The <code>nodemon</code> can watch your scripts and restart the server every time you save the file.</p>
+<p>To install <code>nodemon</code> as a development dependency, run the following command in the terminal:</p>
+<pre><code class="language-bash"
+>npm i -D nodemon</code></pre>
+<aside>
+  <p>The <code>-D</code> means <i>dev dependency</i>. This means that <code>nodemon</code> will not be included in the Node modules that are bundled for the production version of your server. The files on your production server should not be changing often, so it makes no sense to launch them with <code>nodemon</code>. Instead, in a production environment, you would use a <i>process manager</i> like <a href="https://pm2.keymetrics.io/" class="external">PM2</a><span></span>, which can restart your server if it ever crashes.</p>
+</aside>
+<p>You should see a new entry in your <code>package.json</code> file:</p>
+<pre data-start="17">
+<code
+  class="language-bash line-numbers"
+><i>...
+  "mongoose": "^8.2.2"
+  }</i>,
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
+</code></pre>
+<p>To get <code>nodemon</code> to work for you, edit the <code>"scripts"</code> entry in <code>package.json</code>:</p>
+<pre data-start="4">
+<code class="language-bash line-numbers"
+><i>...
+"main": "server.js",
+"scripts": {</i>
+  "start": "nodemon server.js",
+  <i>"test": "echo \"Error: no test specified\" && exit 1"
+},
+"keywords": ...</i>
+</code></pre>
+<p>From your terminal, stop the server by typing <code>Ctrl-C</code></code>, then tell <code>npm</code> to run the script that you have just added:</p>
+<pre><code class="language-bash"
+>npm start</code></pre>
+<p>You should see something like this in your Terminal:</p>
+<pre><code class="language-bash"
+>> backend@1.0.0 start
+> nodemon server.js
+
+<u>[nodemon] 3.1.0
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,cjs,json</u>
+<s>[nodemon] starting `node server.js`</s>
+Express server listening at:
+  http://localhost:3000
+  http://127.0.0.1:3000
+  http://192.168.0.12:3000
+  http://192.168.0.10:3000</code></pre>
+</section>
+
+
+<section
+  id="connect-to-mongodb"
+  data-item="Connect to MongoDB"
+>
+<h2>Connecting to your MongoDB Cluster</h2>
+<p>In order to use MongoDB, you either need to <a href="https://www.mongodb.com/docs/manual/administration/install-community/" class="external">install the Community Edition</a><span></span> on your development computer, or <a href="https://www.mongodb.com/basics/mongodb-atlas-tutorial" class="external">create an account with MongoDB Atlas</a><span></span>. At the end of either process, you should have a connection string. I installed the Community Edition on my development computer, so the string looks like this:</p>
+<pre><code>mongodb://localhost:27017/register</code></pre>
+<p>If you sign up with MongoDB Atlas, you should have a string that might look like this:</p>
+
+<pre><code>mongodb+srv://username:password@cluster0.example.mongodb.net/?retryWrites=true&w=majority</code></pre>
+<p>At the root of your project, create a <code>.env</code> file and give it the following text (but use your own connection string, not mine):</p>
+
+<pre><code class="language-env"
+>PORT=5555
+DB=<u>mongodb://localhost:27017/register</u></code></pre>
+
+<h4>Separation of Concerns</h4>
+<p>The <code>server.js</code> file does one thing, and it does it well. Connecting to the database and communicating with it is not the business of <code>server.js</code>, so you should create a new script for that. And because there are several different processes involved, you will need to create more than one script. It makes sense to keep these scripts together in their own directory.</p>
+<p>Create a directory called <code>database</code> and create a file called <code>index.js</code> inside it.</p>
+<pre>
+<code class="language-javascript line-numbers"
+>const DB = process.env.DB
+
+const mongoose = require('mongoose')
+
+const db = { mongoose }
+module.exports = db
+
+mongoose
+  .connect(DB)
+  .then(() => {
+    console.log(`Connected to ${DB}`)
+  })
+  .catch( error => {
+    console.log("DB connection ERROR:\n", error);
+    process.exit()
+  })</code></pre>
+
+<p><code>nodemon</code> will restart your server, because it has detected changes inside your project, but the new file is not connected to <code>server.js</code> in any way, so nothing new will happen</p>
+<p>Edit <code>server.js</code>:</p>
+
+<pre>
+<code class="language-javascript line-numbers"
+>require('dotenv').config()
+require('./database')
+<i>const PORT =</i> process.env.PORT || 3000
+<i>const express = require('express')
+const app = express()
+...</i></code></pre>
+<p>The first line instructs the <code>dotenv</code> node module to read the <code>.env</code> file and add the properties it defines to the <code>process.env</code> object. This only needs to be done once, and it should be done as early as possible, so line 1 of the main script is a good place to do it.</p>
+<p>In line 3, the value of <code>PORT</code> will be set to the value defined in the <code>.env</code> file: 5555.</p>
+<p>Line 2 simply <code>require</code>s  the <code>./database/index.js</code> file to be loaded and executed. Note that because the file you created is called <code>index.js</code>, Node will automatically assume that it is the file it should load. The <code>server.js</code> file does not do anything with the data exported by the <code>database/index.js</code> file: it just starts the connection process. If any other script <code>require</code>s <code>./database</code>, then the other script will be able to import the <code>db</code> object that it exports.</p>
+<p><code>nodemon</code> will restart your server after you have saved your changes. You should see that the output in the Terminal window has changed:</p>
+<pre><code class="language-bash"
+><s>[nodemon] restarting due to changes...
+[nodemon] starting `node server.js`</s>
+Express server listening at:
+  http://localhost:<u>5555</u>
+  http://127.0.0.1:<u>5555</u>
+  http://192.168.0.12:<u>5555</u>
+  http://192.168.0.10:<u>5555</u>
+  
+Connected to mongodb://localhost:27017/register
+</code></pre>
+<aside class="alert">
+  <p>If you see an error, check that your MongoDB connection string is correct. You may have to run <code>npm start</code> again after you correct your code, to restart <code>nodemon</code>.</p>
+</aside>
+</section>
+
+<section id="intro">
+<h2>Introduction</h2>
+<p>Most sites today customize their content for specific users, or allow users to create their own content. This could be a shopping cart, a social network, progress through a training course, an appointments diary, or any other kind of dynamic content.</p>
+<p>If this is your goal, then your site needs to connect to a database, and create, read, update and delete records, in response to your end-users' interactions in the browser. The very first requirement is to give your users a way to register with your site, and to log in with their registered username or email, and their password.</p>
+<p>One standard technique is to create a <i>backend server</i> which acts as a gatekeeper between the web page in the end-user's browser and the database. The database will securely store your users' connection details, and give them privileged access after they log in.</p>
+<p>In this tutorial, you will be learning how to:
+</p>
+<ol>
+  <li><a href="#bare-bones-server">Set up an Express backend server</a></li>
+  <li><a href="#connect">Connect the server to a MongoDB database</a></li>
+  <li><a href="#user-model">Create a Mongoose model for User records in the <a >database</a></li>
+  <li><a href="#">Test that your model works as planned</a></li>
+  <li><a href="#">Allow new users to sign up</a></li>
+  <li><a href="#">Let new users sign in to their account</a></li>
+  <li><a href="#">Provide privileged data to signed-in users</a></li>
+</ol>
+<h4>Prerequisites</h4>
+<p>Before you start you should already have:</p>
+<ul>
+  <li><a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm" class="external">Downloaded and installed Node.js and NPM</a><span></span></li>
+  <li><a href="https://www.mongodb.com/docs/atlas/getting-started/" class="external">Set up a MongoDB database</a><span></span></li>
+</ul>
+<p>You should also have familiarity with basic bash commands in a Terminal window, and specifically with <code>npm</code> commands.</p>
+
+<aside class="warn">
+  <p>In this tutorial, you <strong>won't</strong> be learning:</p>
+  
+  <ul>
+    <li>How to check ownership of an email address</li>
+    <li>How to reset a forgotten or compromised password</li>
+    <li>How to deploy your server to a hosting service</li>
+  </ul>
+  
+  <p>These topics will be covered in future tutorials.</p>
+</aside>
+
+<aside class="vscode">
+  <h4>Development Environment</h4>
+  
+  <p>I will be using <a href="https://code.visualstudio.com/" class="external">Microsoft's Visual Studio Code</a><span></span> as my code editor. If you are using a different IDE, the screenshots may not match exactly what you see.</p>
+  <p>Any suggestions specific to VS Code will be shown in a field with a dark blue background like this.</p>
+</aside>
+
+</section>
+    
+    <footer id="footer">
+      <button id="previous" disabled>&lt;</button>
+      <span id="previous-name"></span>
+      <span id="spacer"></span>
+      <button id="next">&gt;</button>
+      <span id="next-name"></span>
+    </footer>
+  </main>
+  <nav
+    id="menu"
+    class="open"
+  >
+    <svg
+      id="menu-icon"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <g
+        class="menu"
+        stroke-width="20"
+        stroke-linecap="round"
+      >
+        <path
+          d="M5,20 L5,80 H95 L95,20 z"
+          fill="#0000"
+          stroke="none"
+        />
+        <line
+          x1="15"
+          y1="20"
+          x2="85"
+          y2="20"
+        />
+        <line
+          x1="15"
+          y1="50"
+          x2="85"
+          y2="50"
+        />
+        <line
+          x1="15"
+          y1="80"
+          x2="85"
+          y2="80"
+        />
+      </g>
+    </svg>
+
+    <ul id="menu-items"></ul>
+  </nav>
+</body>
+</html>

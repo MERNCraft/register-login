@@ -1,0 +1,290 @@
+:root {
+  /* Menu */
+  --menu-width: min(12.7em, 50vw);
+  --menu-font-size: 5vw;
+
+  --ratio: 0.25;
+  --icon-size: calc(var(--ratio) * var(--menu-width));
+  --list-width: calc(var(--menu-width) - 1rem);
+  --items-height: calc(100vh - var(--icon-size));
+  --svg-margin: 0.4em;
+  --darkly: #222e;
+  --border: #888;
+  --selected: #000;
+
+  /* Body */
+  --dark: #222;
+  --light: #ddd;
+  --bright: #fff;
+  --main-width: 725px;
+
+  --min-width: calc(var(--main-width) + var(--menu-width));
+
+  /* Footer */
+  --footer-height: 2em;
+  --footer-top: calc(100vh - var(--footer-height))
+}
+
+body {
+  background-color: var(--dark);
+  color: var(--light);
+  margin: 0;
+}
+
+main {
+  position: relative;
+  max-width: var(--main-width);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 1em;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+}
+
+header {
+  text-align: center;
+}
+
+/* Hide all sections... */
+section {
+  display: none;
+  /* Print non last-of-type sections after last-of-type */
+  order: 1;
+  flex: 1;
+}
+
+/* ...except the last, or the :target... */
+section:last-of-type,
+section:target {
+  display: block;
+  /* Print the last-of-type section first */
+  order: 0;
+}
+
+/* ... and hide the last if a target is showing */
+section:target ~ section:last-of-type {
+  display: none
+}
+
+footer {
+  height: var(--footer-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer button {
+  display: inline-block;
+  background-color: transparent;
+  color: inherit;
+  box-sizing: border-box;
+  border: 1px outset #0000; /* transparent */
+  border-radius: 0.2em;
+  width: var(--footer-height);
+  height: var(--footer-height);
+  cursor: pointer;
+}
+
+footer button:hover {
+  border-color: #6c6;
+}
+
+footer button:active {
+  border-style: inset;
+  background-color: #000; /* only applies to #previous button */
+}
+
+footer button:disabled {
+  background-color: transparent;
+  opacity: 0.2;
+  pointer-events: none; /* to prevent reactions to :hover */
+}
+
+footer span {
+  -webkit-user-select: none; /* Safari */
+          user-select: none;
+}
+
+footer button:hover + span {
+  color: var(--bright);
+}
+
+/* The #next button must be listed before #next-name so that
+   button:hover + span will work. But it must be displayed
+  _after_ the name.
+ */
+#next {
+  background-color: #090; /* even when active: call to action */
+  order: 1
+}
+
+/* Don't crowd the names against the buttons */
+#previous-name {
+  margin-left: 0.5em
+}
+
+#next-name {
+  margin-right: 0.5em
+}
+
+/* Push the previous-name and next-name spans apart */
+#spacer {
+  flex-grow: 1
+}
+
+#menu {
+  position: fixed;
+  top: 0;
+  left: calc(-1 * var(--menu-width)); /* offscreen by default */
+  font-size: var(--menu-font-size);
+
+  height: 100vh;
+  width: var(--menu-width);
+  background-color: var(--darkly);
+  border-right: #000;
+  box-shadow: 10px 10px 10px #0009;
+  z-index: 99;
+
+  transition: left .4s linear;
+}
+
+#menu-icon {
+  position: fixed;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  stroke: #fff;
+  top: 0;
+  left: 0;
+  transition-property: left, opacity;
+  transition-duration: .3s, .1s;
+  transition-timing-function: linear, ease;
+  opacity: 0.2;
+}
+
+#menu.open {
+  left: 0;
+}
+
+#menu.open #menu-icon {
+  opacity: 0.8;
+  left: calc(var(--menu-width) - var(--icon-size)); transition-delay: 0.1s, 0s;
+}
+
+#menu #menu-icon:hover { /* boost specificiy */
+  opacity: 1;
+}
+
+#menu-items {
+  margin-top: var(--icon-size);
+  height: var(--items-height);
+  overflow-y: auto;
+  list-style-type: none;
+
+  padding: 0 0.5em;
+}
+
+#menu li {
+  margin-top: 0.25em;
+  border: var(--border) outset 1px;
+  border-radius: 0.5em;
+  color: var(--light);
+}
+
+#menu li:hover {
+  color: var(--bright);
+}
+
+#menu li.target {
+  border-style: inset;
+  background-color: var(--selected)
+}
+
+#menu a {
+  display: inline-block;
+  padding: 0.25em 1em;
+  box-sizing: border-box;
+
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  -webkit-user-select: none; /* Safari */
+          user-select: none;
+}
+
+@media (min-width: 320px) {
+  #menu {
+    font-size: 1rem;
+  }
+}
+
+/* There's not enough room for both footer names.
+   Show the name of the next page, unless the mouse
+  is over the #previous button.
+ */
+@media (max-width: 400px) {
+  footer span:first-of-type {
+    display: none
+  }
+  #previous:hover ~ span:last-of-type {
+    display: none;
+  }
+  #previous:hover + span {
+    display: inline;
+  }
+}
+
+/* It's too narrow to show even one name without it wrapping */
+@media (max-width: 240px) {
+  footer span {
+    display: none
+  }
+}
+
+/* It's too narrow to show even one name without it wrapping */
+@media (min-width: 750px) {
+  main {
+    padding-left: 6px;
+    padding-right: 6px
+  }
+}
+
+@media (min-width: 930px) {
+  main {
+    --extra: calc((100vw - var(--menu-width) - var(--main-width)) / 2);
+    --left-margin: calc(var(--menu-width) + var(--extra));
+    margin-left: var(--left-margin);
+    margin-right: var(--extra);
+  }
+
+  #menu {
+    left: 0;
+  }
+  #menu-icon {
+    display: none;
+  }
+}
+
+@media print {
+  /* Don't print the menu or footer */
+  #menu,
+  footer {
+    display: none !important;
+  }
+
+  /* Print all sections */
+  main {
+    height: auto;
+  }
+
+  p {
+    display: block;
+    page-break-inside: avoid;
+  }
+
+  section {
+    display: block !important;
+  }
+}

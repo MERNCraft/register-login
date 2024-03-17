@@ -1,7 +1,7 @@
 :root {
   /* Menu */
   --menu-width: min(12.7em, 50vw);
-  --menu-font-size: 5vw;
+  --menu-font-size: 4vw;
 
   --ratio: 0.25;
   --icon-size: calc(var(--ratio) * var(--menu-width));
@@ -178,6 +178,8 @@ footer button:hover + span {
 }
 
 #menu-items {
+  display: flex;
+  flex-direction: column;
   margin-top: var(--icon-size);
   height: var(--items-height);
   overflow-y: auto;
@@ -214,7 +216,48 @@ footer button:hover + span {
           user-select: none;
 }
 
-@media (min-width: 320px) {
+#menu-items .spacer {
+  order: 1;
+  flex: 1;
+  border: none;
+}
+
+#menu-items li.repo {
+  order: 2;
+  border: none;
+  margin-bottom: 0.5em;
+}
+
+.repo img {
+  height: var(--footer-height);
+  width: var(--footer-height);
+}
+
+div.repo a,
+#menu-items .repo a {
+  color: #fff;
+  text-decoration: underline;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0;
+}
+
+div.repo {
+  margin: 2em 0;
+}
+
+
+div.repo a {
+  justify-content: center;
+}
+
+div.repo span {
+  margin-left: 1em;
+}
+
+
+@media (min-width: 410px) {
   #menu {
     font-size: 1rem;
   }
@@ -224,7 +267,7 @@ footer button:hover + span {
    Show the name of the next page, unless the mouse
   is over the #previous button.
  */
-@media (max-width: 400px) {
+@media (max-width: 410px) {
   footer span:first-of-type {
     display: none
   }
@@ -243,7 +286,6 @@ footer button:hover + span {
   }
 }
 
-/* It's too narrow to show even one name without it wrapping */
 @media (min-width: 750px) {
   main {
     padding-left: 6px;

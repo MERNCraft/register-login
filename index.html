@@ -303,8 +303,7 @@ Connected to mongodb://localhost:27017/register
 <p>Most sites today customize their content for specific users, or allow users to create their own content. This could be a shopping cart, a social network, progress through a training course, an appointments diary, or any other kind of dynamic content.</p>
 <p>If this is your goal, then your site needs to connect to a database, and create, read, update and delete records, in response to your end-users' interactions in the browser. The very first requirement is to give your users a way to register with your site, and to log in with their registered username or email, and their password.</p>
 <p>One standard technique is to create a <i>backend server</i> which acts as a gatekeeper between the web page in the end-user's browser and the database. The database will securely store your users' connection details, and give them privileged access after they log in.</p>
-<p>In this tutorial, you will be learning how to:
-</p>
+<p>In this tutorial, you will be learning how to:</p>
 <ol>
   <li><a href="#bare-bones-server">Set up an Express backend server</a></li>
   <li><a href="#connect">Connect the server to a MongoDB database</a></li>
@@ -321,23 +320,30 @@ Connected to mongodb://localhost:27017/register
   <li><a href="https://www.mongodb.com/docs/atlas/getting-started/" class="external">Set up a MongoDB database</a><span></span></li>
 </ul>
 <p>You should also have familiarity with basic bash commands in a Terminal window, and specifically with <code>npm</code> commands.</p>
-
+<div class="repo">
+  <a href="https://github.com/MERNCraft/register-login">
+    <img src="tutorial/images/github.svg" alt="github logo">
+    <span>GitHub repository</span>
+  </a>
+</div>
+<hr>
 <aside class="warn">
   <p>In this tutorial, you <strong>won't</strong> be learning:</p>
   
   <ul>
-    <li>How to check ownership of an email address</li>
-    <li>How to reset a forgotten or compromised password</li>
-    <li>How to deploy your server to a hosting service</li>
+    <li>How to check ownership of an email address*</li>
+    <li>How to reset a forgotten or compromised password*</li>
+    <li>How to deploy your server to a hosting service*</li>
+    <li>How to <a href="https://github.com/MERNCraft/CORS-backend/blob/main/README.md">use CORS to connect from a different host</a></li>
   </ul>
   
-  <p>These topics will be covered in future tutorials.</p>
+  <p>* These topics will be covered in future tutorials.</p>
 </aside>
 
 <aside class="vscode">
   <h4>Development Environment</h4>
   
-  <p>I will be using <a href="https://code.visualstudio.com/" class="external">Microsoft's Visual Studio Code</a><span></span> as my code editor. If you are using a different IDE, the screenshots may not match exactly what you see.</p>
+  <p>I use <a href="https://code.visualstudio.com/" class="external">Microsoft's Visual Studio Code</a><span></span> as my code editor, on MacOS Sonoma. If you are using a different IDE or a different operating system, the screenshots may not match exactly what you see.</p>
   <p>Any suggestions specific to VS Code will be shown in a field with a dark blue background like this.</p>
 </aside>
 
@@ -391,7 +397,17 @@ Connected to mongodb://localhost:27017/register
       </g>
     </svg>
 
-    <ul id="menu-items"></ul>
+    <ul id="menu-items">
+      <li class="spacer"></li>
+      <li class="repo">
+        <a
+          href="https://github.com/MERNCraft/register-login"
+        >
+          <img src="tutorial/images/github.svg" alt="github logo">
+          <span>GitHub repository</span>
+        </a>
+      </li>
+    </ul>
   </nav>
 </body>
 </html>

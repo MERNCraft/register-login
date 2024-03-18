@@ -71,6 +71,7 @@ section:target ~ section:last-of-type {
 
 footer {
   height: var(--footer-height);
+  margin: var(--footer-height) 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -255,6 +256,36 @@ div.repo a {
 div.repo span {
   margin-left: 1em;
 }
+
+button[data-name] {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+}
+
+button[data-name]:hover {
+  color: #fff;
+}
+
+[name^=anchor] {
+  background-color: transparent;
+  transition: background-color 2000ms ease-out;
+}
+
+[name^=anchor].highlight {
+  background-color: #666;
+  transition: background-color 0ms;
+}
+
+th {
+  vertical-align: top;
+  padding: 0 1em;
+}
+
 
 
 @media (min-width: 410px) {

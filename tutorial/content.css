@@ -66,6 +66,10 @@ aside {
   box-sizing: border-box;
 }
 
+aside:not([class]) code {
+  background-color: #353;
+}
+
 aside.vscode {
   background-color: #224;
   border-left: 1em solid #006;

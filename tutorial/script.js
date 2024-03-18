@@ -63,7 +63,7 @@ const endFudge = 10     // pixels from bottom when scrolled to end
 const sectionIds = []
 const sectionNames = []
 const menuItems = []
-let target = ""
+let hash = ""
 let tops = {}
 let activeItem
 let noHash
@@ -149,36 +149,49 @@ function getVisibleBlocks() {
 }
 
 
+function getHash() {
+  return(location.hash || noHash).replace("#", "")
+}
+
 
 // Scroll to the last position shown for the chosen page
 window.addEventListener("hashchange", hashChange)
 
 function hashChange() {
+  console.log("hashChange")
   // The hash change will show the associated section, and place
   // the section at the top of the viewport.
-  target = (location.hash || noHash).replace("#", "")
-  setPreviousAndNext(target)
-
-  // Update the list of block elements that are visible
+  hash = getHash()
+  console.log("hash:", hash);
+  
+  // Update the list of block elements that are now visible
   blocks = getVisibleBlocks()
+  
+  // Update the section names in the footer
+  setPreviousAndNext(hash)
 
   // Hilite the associated button in the menu
-  setTargetClassInMenu(target)
+  setTargetClassInMenu(hash)
 
   // Scroll all the way to the top (to show the header)...
   main.scrollTo({ top: 0 })
 
   // Find the top of the element that the user had scrolled to
   // when last visiting the page...
-  const topElement = tops[target]
+  const topElement = tops[hash]
   const { top } = topElement.getBoundingClientRect()
+
+  console.log("hashChange top:", top, getStartOfText(topElement));
+  
+  const { scrollHeight, offsetHeight, scrollTop } = main
+  console.log("hashChange", { scrollHeight, offsetHeight, scrollTop});
 
   // ... and scroll the page to show it
   main.scrollTo({ top })
 }
 
-function setPreviousAndNext(target) {
-  const index = sectionIds.indexOf(target)
+function setPreviousAndNext(hash) {
+  const index = sectionIds.indexOf(hash)
   const isLast = (index === sectionIds.length - 1)
 
   if (index) {
@@ -198,8 +211,8 @@ function setPreviousAndNext(target) {
   }
 }
 
-function setTargetClassInMenu(target) {
-  const menuId = `menu-item-${target}`
+function setTargetClassInMenu(hash) {
+  const menuId = `menu-item-${hash}`
 
   menuItems.forEach( menuItem => {
     if (menuItem.id === menuId) {
@@ -219,9 +232,16 @@ function setTargetClassInMenu(target) {
 main.addEventListener("scroll", setScrollElement)
 
 function setScrollElement() {
+  // When location.hash is changed, a "scroll" event may be
+  // triggered before a "hashchange" event, so the value of
+  // hash may be out of date.
+  const hash = getHash() // scope is function scope, not script 
+  console.log("scrollElement", { hash, location_hash: location.hash })
   // Check if the section is scrolled all the way to the end...
   const { scrollHeight, offsetHeight, scrollTop } = main
   const atEnd = scrollTop > scrollHeight - offsetHeight - endFudge
+  
+  console.log("scrollElement", { scrollHeight, offsetHeight, scrollTop, atEnd});
   
   let topIndex
 
@@ -242,7 +262,9 @@ function setScrollElement() {
 
   const topElement = blocks[topIndex]
 
-  tops[target] = topElement
+  console.log("setScrollElement:", hash, topIndex, topElement, getStartOfText(topElement));
+
+  tops[hash] = topElement
 }
 
 
@@ -322,6 +344,39 @@ function getStartOfText(element) {
   }
 
   return text
+}
+
+
+document.body.addEventListener("click", showAnchor)
+
+function showAnchor({ target }) {
+  if (target.matches("button[data-name^=anchor]")) {
+    const name = target.dataset.name
+    const anchor = document.querySelector(`[name=${name}]`)
+    if (!anchor) {
+      // The <tag name="anchor-xxx"> element hasn't been added yet
+      return
+    }
+
+    const id = anchor.closest("section[id]").id
+    console.log(`showAnchor, about to set hash (currently ${hash})`);
+    
+    location.hash = id  
+    console.log(`showAnchor location.hash set to ${id}`)
+    
+    anchor.classList.add("highlight")
+    setTimeout(() => {
+      anchor.classList.remove("highlight")    
+      anchor.scrollIntoView()
+
+      const { scrollHeight, offsetHeight, scrollTop } = main
+      console.log("showAnchor", { scrollHeight, offsetHeight, scrollTop});
+      const topModel = tops['user-model']
+      console.log("tops['user-model':", topModel, getStartOfText(topModel));
+      
+    
+    }, 10)
+  }
 }
 
 

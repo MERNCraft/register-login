@@ -16,7 +16,7 @@
 <body>
 <main id="main">
 <header>
-<h1>User Registration and Log In</h1>
+<h1>User Registration and Login</h1>
 <h3>using Express, Mongoose and JSON Web Tokens</h3>
 </header>
 
@@ -95,10 +95,33 @@ app.get('/', (req, res) => {
 
 
 app.listen(3000)</code></pre>
-<p>This is the simplest possible Express server. In the Terminal, run the following command to launch your server:</p>
+<p>This is the simplest possible Express server. The <code>app.get()</code> function will be triggered when a request is made from a browser to <a href="http://localhost:3000/">http://localhost:3000/</a>. The <code>'/'</code> argument corresponds to the the trailing <code>/</code> on the URL.</p>
+
+
+<div name="anchor-res-req">
+  <p>The second argument is an anonymous function that receives two objects from the <code>app</code> instance:</p>
+  <table>
+    <tbody>
+      <tr>
+        <th scope="row">req</th>
+        <td>is an instance of <a href="https://nodejs.org/api/http.html#class-httpclientrequest" class="external">http.ClientRequest</a><span></span>. It contains data from the browser, and also information about the browser and the operating system on which it is running.</td>
+      </tr>
+      <tr>
+        <th scope="row">res</th>
+        <td>is an instance of <a href="https://nodejs.org/api/http.html#class-httpserverresponse" class="external">http.ServerResponse</a><span></span>. It contains methods which can be used to send data back to the browser.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>Here, the <code>res</code> object is used simply to <code>send</code> a string back to the browser that requested it.</p>
+
+  
+<p>In the Terminal, run the following command to launch your server:</p>
 <pre><code class="language-bash"
 >node server.js</code></pre>
-<p>If you open your browser and visit <a href="http://localhost:3000">http://localhost:3000</a>, you should see <code>Hello from Express</code>. This shows that your server is working.</p>
+<p>If you open your browser and visit <a href="http://localhost:3000/">http://localhost:3000/</a>, you should see:</p>
+<blockquote><pre>Hello from Express</pre></blockquote>
+<p>This shows that your server is working.</p>
 <aside class="tip">
   <p>"Test early, test often, test on all your target devices."</p>
   <p>This is a good mantra to follow. Take small steps, and make sure that everything is working the way you expect before continuing to the next step.</p>
@@ -238,7 +261,7 @@ Express server listening at:
 <pre><code>mongodb://localhost:27017/register</code></pre>
 <p>If you sign up with MongoDB Atlas, you should have a string that might look like this:</p>
 
-<pre><code>mongodb+srv://username:password@cluster0.example.mongodb.net/?retryWrites=true&w=majority</code></pre>
+<pre><code>mongodb+srv://username:password@cluster0.mongodb.net/?retryWrites=true&w=majority</code></pre>
 <p>At the root of your project, create a <code>.env</code> file and give it the following text (but use your own connection string, not mine):</p>
 
 <pre><code class="language-env"
@@ -248,7 +271,7 @@ DB=<u>mongodb://localhost:27017/register</u></code></pre>
 <h4>Separation of Concerns</h4>
 <p>The <code>server.js</code> file does one thing, and it does it well. Connecting to the database and communicating with it is not the business of <code>server.js</code>, so you should create a new script for that. And because there are several different processes involved, you will need to create more than one script. It makes sense to keep these scripts together in their own directory.</p>
 <p>Create a directory called <code>database</code> and create a file called <code>index.js</code> inside it.</p>
-<pre>
+<pre name="anchor-db">
 <code class="language-javascript line-numbers"
 >const DB = process.env.DB
 
@@ -267,9 +290,11 @@ mongoose
     process.exit()
   })</code></pre>
 
-<p><code>nodemon</code> will restart your server, because it has detected changes inside your project, but the new file is not connected to <code>server.js</code> in any way, so nothing new will happen</p>
-<p>Edit <code>server.js</code>:</p>
-
+<p><code>nodemon</code> will restart your server, because it has detected changes inside your project, but the new file is not connected to <code>server.js</code> in any way, so nothing new will happen.</p>
+<p>It can take some time to connect to a database which may be hosted on a remote server. To allow the JavaScript engine to continue with other tasks while it's waiting, the <code>connect</code> method of the Mongoose model is asynchronous.</p>
+<p><code>mongoose.connect()</code> returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="external">Promise</a><span></span> which will eventually be fulfilled. The <code>then()</code> function will be called at some time in the future, if the connection is successful.</p><p>If the connection fails, the <code>catch()</code> function will be called instead. It makes no sense to continue running the server if there is no connection to the database, so the server will print an explanation about what happened in the console and then exit.</p>
+<h4>Testing the Connection</h4>
+<p>You need to get <code>server.js</code> to load this new database script, and you need to ensure that the database script has access to <code>process.env.DB</code> as soon as it loads. Edit <code>server.js</code> as shown below:</p>
 <pre>
 <code class="language-javascript line-numbers"
 >require('dotenv').config()
@@ -278,10 +303,10 @@ require('./database')
 <i>const express = require('express')
 const app = express()
 ...</i></code></pre>
-<p>The first line instructs the <code>dotenv</code> node module to read the <code>.env</code> file and add the properties it defines to the <code>process.env</code> object. This only needs to be done once, and it should be done as early as possible, so line 1 of the main script is a good place to do it.</p>
+<p>The first line instructs the <code>dotenv</code> node module to read the <code>.env</code> file and add the properties it defines to the <code>process.env</code> object. This only needs to be done once, and it should be done as early as possible, so line 1 of the main script is a good place to do it. By the time line 2 is executed, the value of <code>DB</code> that you added to the <code>.env</code> file will be available.</p>
 <p>In line 3, the value of <code>PORT</code> will be set to the value defined in the <code>.env</code> file: 5555.</p>
-<p>Line 2 simply <code>require</code>s  the <code>./database/index.js</code> file to be loaded and executed. Note that because the file you created is called <code>index.js</code>, Node will automatically assume that it is the file it should load. The <code>server.js</code> file does not do anything with the data exported by the <code>database/index.js</code> file: it just starts the connection process. If any other script <code>require</code>s <code>./database</code>, then the other script will be able to import the <code>db</code> object that it exports.</p>
-<p><code>nodemon</code> will restart your server after you have saved your changes. You should see that the output in the Terminal window has changed:</p>
+<p>Line 2 simply <code>require</code>s  the <code>./database/index.js</code> file to be loaded and executed. Note that because the file you created is called <code>index.js</code>, Node will automatically assume that this is the file it should load. The <code>server.js</code> file does not do anything with the data exported by the <code>database/index.js</code> file: it just starts the connection process. If any other script <code>require</code>s <code>./database</code>, then the other script will be able to import the <code>db</code> object that it exports.</p>
+<p><code>nodemon</code> will restart your server after you have saved your changes. You should see that the output in the Terminal window has changed. You should see something like this, but the actual values will depend on your set-up:</p>
 <pre><code class="language-bash"
 ><s>[nodemon] restarting due to changes...
 [nodemon] starting `node server.js`</s>
@@ -291,11 +316,242 @@ Express server listening at:
   http://192.168.0.12:<u>5555</u>
   http://192.168.0.10:<u>5555</u>
   
-Connected to mongodb://localhost:27017/register
+<u>Connected to mongodb://localhost:27017/register</u>
 </code></pre>
 <aside class="alert">
   <p>If you see an error, check that your MongoDB connection string is correct. You may have to run <code>npm start</code> again after you correct your code, to restart <code>nodemon</code>.</p>
 </aside>
+</section>
+
+<section
+  id="user-model"
+  data-item="User Records Model"
+>
+<h2>Creating and Testing a Model for User Records</h2>
+<p>MongoDB saves documents in <i>collections</i> in a <a href="https://www.mongodb.com/docs/drivers/java/sync/current/fundamentals/data-formats/document-data-format-bson/" class="external">Binary JSON format</a><span></span>. The Mongoose module helps you to ensure that all documents in a given collection have the same structure. Mongoose will prevent you from saving a document with an unexpected structure, so you have fewer problems to worry about.</p>
+<h4>Defining the Structure of a Model</h4>
+<p>One structure that makes sense for a User document is an object like this:</p>
+<pre>
+<code class="language-json"
+>{
+  "username": "Yan Wang",
+  "email": "yan@example.com",
+  "hash": "$2a$08$OVCBebqxKd14FLP0zDeaaONVq"
+}
+</code></pre>
+<aside class="tip">
+  <p>Notice that the user's password is not stored: only seemingly random string created by a one-way hash algorithm. This means that even if hackers break into your database, they can't retrieve any passwords. Visitors tend to use the same passwords on many different sites, so if an email-password pair is found on any hacked site, bad guys can often get access to the user's other accounts.</p>
+</aside>
+<p>To teach Mongoose that this is the structure you want to use for all User documents, create a new file at <code>database/models/user.js</code>:</p>
+<pre>
+<code class="language-javascript line-numbers"
+>const { Schema, model } = require('mongoose')
+
+const schema = Schema({
+  username: String,
+  email: String,
+  hash: String
+})
+
+const User = model("User", schema)
+
+module.exports = User</code></pre>
+<p>This exports a Mongoose <i>model</i> that can be used by other scripts. You can read more about Mongoose models <a href="https://mongoosejs.com/docs/models.html" class="external">here</a><span></span>.</p>
+<p>Question: <b>How can you test whether this User model can be used to create a new document in the MongoDB database?</b> You <i>could</i> write all the code necessary to make a sign-up request from a browser, and _then_ test that the User model is working. A better approach is to create a specific test right now, writing as little code as possible.</p>
+
+<h4>Giving the Database Access to the Model</h4>
+<p>Whether you are writing a test or writing code that will be used in the final server, you first need to connect your new model with the existing database code.</p>
+<p>Earlier, <button data-name="anchor-db">you created a <code>db</code> object in the script <code>database/index.js</code></button>. Edit this script now, to give it access to the <code>User</code> model that is exported by <code>database/user.js</code>. The <code>index.js</code> script can then re-export the <code>User</code> model. Other scripts can find all the database features in one place.</p>
+<pre>
+<code class="language-javascript line-numbers"
+><i>const DB = process.env.DB
+const mongoose = require('mongoose')</i>
+const User = require('./models/user')
+
+<i>mongoose
+  .connect(DB)
+  .then(() => {
+    console.log(`Connected to ${DB}`)</i>
+    <u>// Temporary code to test the User model will go here</u>
+  <i>})
+  .catch( error => {
+    console.log("DB connection ERROR:\n", error);
+    process.exit()
+  })
+
+const db = {
+  mongoose</i><b>,
+  <b>User</b></b><i>
+}
+
+module.exports = db</i></code></pre>
+
+<h4>Testing the Model</h4></p>
+<p>Your application needs to do three main things:</p>
+<ol>
+  <li>Store data in some kind of data structure</li>
+  <li>Provide end users with the precise data they need</li>
+  <li>Control the data: create, read, update and delete documents</li>
+</ol>
+<p>One tried-and-tested way of doing these three things is to use the Model-View-Controller (MVC) pattern. You have already created a Model, to handle item 1, the storage of data. Your end-users will use their browsers to _view_ the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.</p>
+<p>You can read more about the Model-View-Controller pattern <a href="https://www.freecodecamp.org/news/the-model-view-controller-pattern-mvc-architecture-and-frameworks-explained/" class="external">here</a><span></span>.</p>
+<p>So now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
+Create <code>controllers/signup.js</code>, and give it the following script:
+<pre>
+<code class="language-javascript line-numbers"
+>const bcrypt = require('bcryptjs')
+const { User } = require('../database')
+
+
+function signUp(req, res) {
+  const { username, email, password } = req.body
+
+  const hash = bcrypt.hashSync(password, 8)
+  const options = { username, email, hash }
+
+  let message
+
+  const treatSuccess = (user) => {
+    const { username, email } = user
+    message = {
+      message: "User record created",
+      user: {
+        username,
+        email
+      }
+    }
+    message = JSON.stringify(message, null, "  ")
+  }
+
+  const treatError = error => {
+    message = `ERROR: User for "${username}" not saved
+${error}`
+  }
+
+  const proceed = () => {
+    console.log(message )
+  }
+
+
+  new User(options)
+    .save()
+    .then(treatSuccess)
+    .catch(treatError)
+    .finally(proceed)
+}
+
+
+module.exports = signUp</code></pre>
+<p>The core of the script is the <code>signUp</code> function, which is exported at the end.</p>
+<p><button data-name="anchor-res-req">As you saw earlier</button>, when the server receives a request from a client, the Express app calls a function that has two parameters, which are conventionally called <code>req</code> and <code>res</code> (request and response). That's why the <code>signUp</code> function has these two parameters. In its current version, it only uses the <code>req</code> argument, but you'll be <button data-name="anchor-use-res">editing this function to use <code>res</code></button> later.</p>
+
+<p>Express can add read the data sent from the browser and store in a <code>body</code> object. (You'll see <button data-name="anchor-set-body">how to do that</button> soon). For now, you can assume that</p>
+<ul>
+  <li>The <code>req</code> object contains a <code>body</code> object</li>
+  <li>The <code>req.body</code> object <i>will</i> have three key/value pairs: <code>username</code>, <code>email</code></li>
+  <li>All these values are strings.</li>
+</ul>
+<p>(You'll see <button data-name="anchor-validate">how to check that this is true</button> shortly.)</p>
+
+
+3. Create `controllers/index.js`:
+```javascript
+const signUp = require('./signup')
+
+module.exports = {
+  signUp
+}
+```
+
+4. Create `temp/addUser.js`
+```javascript
+const {
+  signUp
+} = require('../controllers')
+
+
+const addUser = async () => {
+  const req = {
+    body: {
+      username: "to_be_deleted",
+      email: "delete@example.com",
+      password: "p455w0rd"
+    }
+  }
+
+  signUp(req)
+}
+
+
+module.exports = addUser
+```
+
+5. Edit `database/index.js` to export `User` and call `addUser`:
+```javascript
+const DB = process.env.DB
+
+const mongoose = require('mongoose')
+const User = require('./models/user')                 // NEW LINE
+
+mongoose
+  .connect(DB)
+  .then(() => {
+    console.log(`Connected to ${DB}`)
+
+    // Temporary test to show that the database works // NEW LINE
+    require('../temp/addUser')()                      // NEW LINE
+
+  })
+  .catch( error => {
+    console.log("DB connection ERROR:\n", error);
+    process.exit()
+  })
+
+
+const db = {
+  mongoose,
+  User                                                 // NEW LINE
+}
+
+
+module.exports = db
+```
+
+> ```
+> Connected to mongodb://localhost:27017/register  
+> {
+>    message: 'User record created',
+>    user: {
+>      username: 'to_be_deleted',
+>      email: 'delete@example.com'
+>    }
+>  }
+> ```
+4. To view the newly created document(s), in new Terminal window run:
+```
+mongosh
+use register
+> switched to db register
+db.users.find()
+```
+> Outputs many objects with a format like:
+> ```
+>{
+>    _id: ObjectId('65ea03b4d229099a43b80419'),
+>    username: 'to_be_deleted',
+>    email: 'delete@example.com',
+>    hash: '$2a$08$8tMlYhsOPSOjuaeEU1L2WupnvUUqxrc7jywNHUAR00aLHRI/TuZBC',
+>    __v: 0
+>  }
+> ```
+
+5. To delete these new documents, along with the whole `users` collection, run:
+```
+db.users.drop()
+```
+>```
+>true
+>```
 </section>
 
 <section id="intro">
@@ -334,7 +590,7 @@ Connected to mongodb://localhost:27017/register
     <li>How to check ownership of an email address*</li>
     <li>How to reset a forgotten or compromised password*</li>
     <li>How to deploy your server to a hosting service*</li>
-    <li>How to <a href="https://github.com/MERNCraft/CORS-backend/blob/main/README.md">use CORS to connect from a different host</a></li>
+    <li>How to <a href="https://github.com/MERNCraft/CORS-backend/blob/main/README.md">use CORS to connect to the backend from a different frontend host</a></li>
   </ul>
   
   <p>* These topics will be covered in future tutorials.</p>

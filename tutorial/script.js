@@ -67,7 +67,7 @@ let hash = ""
 let tops = {}
 let activeItem
 let noHash
-let blocks
+let blocks // array of elements in main, sorted by top
 
 
 
@@ -77,7 +77,7 @@ const items = sections.forEach(( section, index ) => {
   if (id) {
     const header = section.firstElementChild
     const sectionName = section.dataset.item || getStartOfText(header)
-    tops[id] = main
+    tops[id] = 0
 
     const li = document.createElement("li")
     li.setAttribute("id", `menu-item-${id}`)
@@ -149,20 +149,13 @@ function getVisibleBlocks() {
 }
 
 
-function getHash() {
-  return(location.hash || noHash).replace("#", "")
-}
-
-
 // Scroll to the last position shown for the chosen page
 window.addEventListener("hashchange", hashChange)
 
 function hashChange() {
-  console.log("hashChange")
   // The hash change will show the associated section, and place
   // the section at the top of the viewport.
-  hash = getHash()
-  console.log("hash:", hash);
+  hash = (location.hash || noHash).replace("#", "")
   
   // Update the list of block elements that are now visible
   blocks = getVisibleBlocks()
@@ -176,15 +169,19 @@ function hashChange() {
   // Scroll all the way to the top (to show the header)...
   main.scrollTo({ top: 0 })
 
-  // Find the top of the element that the user had scrolled to
-  // when last visiting the page...
-  const topElement = tops[hash]
-  const { top } = topElement.getBoundingClientRect()
+  // Find the element that was straddling/at the top the last
+  // time the user visited this page...
+  const topMeasure = tops[hash]
+  const topIndex = parseInt(topMeasure)
+  const topElement = blocks[topIndex]
+  // ... and scroll so that the same amount straddles the top
+  // of the page now
+  const fraction = topMeasure - topIndex // part that's invisible
+  let { top, height } = topElement.getBoundingClientRect()
 
-  console.log("hashChange top:", top, getStartOfText(topElement));
-  
-  const { scrollHeight, offsetHeight, scrollTop } = main
-  console.log("hashChange", { scrollHeight, offsetHeight, scrollTop});
+  if (fraction) {
+    top += fraction * height
+  }
 
   // ... and scroll the page to show it
   main.scrollTo({ top })
@@ -228,44 +225,45 @@ function setTargetClassInMenu(hash) {
 }
 
 
-// Remember where this page was last scrolled to
-main.addEventListener("scroll", setScrollElement)
 
-function setScrollElement() {
-  // When location.hash is changed, a "scroll" event may be
-  // triggered before a "hashchange" event, so the value of
-  // hash may be out of date.
-  const hash = getHash() // scope is function scope, not script 
-  console.log("scrollElement", { hash, location_hash: location.hash })
+// Remember where this page was last scrolled to
+main.addEventListener("scroll", debounce(setScrollMeasure))
+
+function setScrollMeasure() {
   // Check if the section is scrolled all the way to the end...
   const { scrollHeight, offsetHeight, scrollTop } = main
   const atEnd = scrollTop > scrollHeight - offsetHeight - endFudge
   
-  console.log("scrollElement", { scrollHeight, offsetHeight, scrollTop, atEnd});
-  
-  let topIndex
+  let measure
 
   if (atEnd) {
     // ... and if so, ensure that the end of the section is
     // shown on the next visit, so that the #previous and #next
     // buttons are visible
-    topIndex = blocks.length - 1
+    measure = blocks.length - 1
 
   } else {
     // Show the beginning of the block that was at the top
-    topIndex = blocks.findIndex( block => {
-      const { bottom } = block.getBoundingClientRect()
-      return bottom > 0
+    let fraction
+    measure = blocks.findIndex( block => {
+      const { top, bottom } = block.getBoundingClientRect()
+      const found = bottom > 0
+
+      if (found) {
+        fraction = -top / (bottom - top)
+      }
+
+      return found
     })
-    topIndex = Math.max(0, topIndex)
+
+    // integer part = index of element
+    // fractional part = proportion hidden above top of viewport
+    measure = Math.max(0, measure) + fraction
   }
 
-  const topElement = blocks[topIndex]
-
-  console.log("setScrollElement:", hash, topIndex, topElement, getStartOfText(topElement));
-
-  tops[hash] = topElement
+  tops[hash] = measure
 }
+
 
 
 icon.addEventListener("click", toggleMenu)
@@ -301,6 +299,7 @@ function toggleMenu() {
     toggleMenu()
   }
 }
+
 
 
 foot.addEventListener("mouseup", goSection)
@@ -347,6 +346,7 @@ function getStartOfText(element) {
 }
 
 
+
 document.body.addEventListener("click", showAnchor)
 
 function showAnchor({ target }) {
@@ -358,25 +358,42 @@ function showAnchor({ target }) {
       return
     }
 
-    const id = anchor.closest("section[id]").id
-    console.log(`showAnchor, about to set hash (currently ${hash})`);
-    
-    location.hash = id  
-    console.log(`showAnchor location.hash set to ${id}`)
-    
+    hash = anchor.closest("section[id]").id    
+    location.hash = hash  
     anchor.classList.add("highlight")
-    setTimeout(() => {
-      anchor.classList.remove("highlight")    
-      anchor.scrollIntoView()
 
-      const { scrollHeight, offsetHeight, scrollTop } = main
-      console.log("showAnchor", { scrollHeight, offsetHeight, scrollTop});
-      const topModel = tops['user-model']
-      console.log("tops['user-model':", topModel, getStartOfText(topModel));
-      
-    
+    // The hashchange event won't be immediate, but it will scroll
+    // the page to its previous position. Wait for that to happen
+    // before scrolling to the anchor and removing the highlight.
+    setTimeout(() => {
+      anchor.scrollIntoView()
+      anchor.classList.remove("highlight") 
     }, 10)
   }
+}
+
+// https://www.freecodecamp.org/news/javascript-debounce-example/
+// USAGE //
+// function postBounce(a,b,c){
+//   console.log('Done', a, b, c);
+// }
+// const processChange = debounce(postBounce);
+// for ( let ii = 0; ii < 1000; ii += 1 ) {
+//   processChange(2,3,4)
+// }
+// // Will print Done 2 3 4 after bouncing is done
+
+function debounce(debouncedFunction, delay = 300) {
+  let timeout
+
+  return (...args) => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(
+      () => debouncedFunction.apply(null, args),
+      delay
+    );
+  };
 }
 
 

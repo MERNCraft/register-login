@@ -94,6 +94,14 @@ aside.alert code {
   background-color: #633;
 }
 
-li {
-  margin-top: 0.5em;
+aside.question {
+  background-color: #202;
+  border-right: 1em solid;
+  border-color: #606;
 }
+
+li,
+br {
+  margin-bottom: 0.5em;
+}
+

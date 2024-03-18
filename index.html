@@ -357,7 +357,10 @@ const User = model("User", schema)
 
 module.exports = User</code></pre>
 <p>This exports a Mongoose <i>model</i> that can be used by other scripts. You can read more about Mongoose models <a href="https://mongoosejs.com/docs/models.html" class="external">here</a><span></span>.</p>
-<p>Question: <b>How can you test whether this User model can be used to create a new document in the MongoDB database?</b> You <i>could</i> write all the code necessary to make a sign-up request from a browser, and _then_ test that the User model is working. A better approach is to create a specific test right now, writing as little code as possible.</p>
+<aside class="question">
+  <h3>Question: How can you test whether this User model can be used to create a new document in the MongoDB database?</h3>
+  <p>You <i>could</i> write all the code necessary to make a sign-up request from a browser, and <i>only then</i> test that the User model is working. A better approach is to create a specific test right now, writing as little code as possible.</p>
+</aside>
 
 <h4>Giving the Database Access to the Model</h4>
 <p>Whether you are writing a test or writing code that will be used in the final server, you first need to connect your new model with the existing database code.</p>
@@ -365,6 +368,7 @@ module.exports = User</code></pre>
 <pre>
 <code class="language-javascript line-numbers"
 ><i>const DB = process.env.DB
+
 const mongoose = require('mongoose')</i>
 const User = require('./models/user')
 
@@ -385,18 +389,41 @@ const db = {
 }
 
 module.exports = db</i></code></pre>
+<aside>
+  <h3>The Model-View-Controller Pattern</h3>
+  <p>Your application needs to do three main things:</p>
+  <ol>
+    <li>Store data in some kind of data structure</li>
+    <li>Accept data that the end users input and serve them the data that they expect in return</li>
+    <li>Control the flow of data: create, read, update and delete documents</li>
+  </ol>
+  <p>One tried-and-tested way of doing these three things is to use the <b>Model-View-Controller</b> (MVC) pattern.</p>
+  <p>To use a metaphor from the theatre industry:</p>
+  <table>
+    <tbody>
+      <tr>
+        <th scope="row">The Model</th>
+        <td>is like the script and the scenery. It is the words and objects which can be manipulated by the actors for the entertainment of the audience.</td>
+      </tr>
+      <tr>
+        <th scope="row">The View</th>
+        <td>is what you see now on the stage, and the interaction between the audience and the actors. The actors will produce a different performance if the audience applauds them than if they throw tomatoes.</td>
+      </tr>
+      <tr>
+        <th scope="row">The Controller</th>
+        <td>is all the work of the playwright, the director, the producer, the stagehands and the theatre staff. Without them working invisibly to get everything in the right place at the right time, there would be no performance.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>You have already created a Model, to handle item 1 — the storage of data.</p>
+  <p>Your end-users will use their browsers to View the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.<br>There's just one problem: you haven't started writing any code for this yet. As a temporary workaround, you can create some dummy form data and print the content that it generates in the console.</p>
+  <p>Now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
+  </ul>
+  <p>You can read more about the Model-View-Controller pattern <a href="https://www.freecodecamp.org/news/the-model-view-controller-pattern-mvc-architecture-and-frameworks-explained/" class="external">here</a><span></span>.</p>
+</aside>
+<h4>Using the Model</h4></p>
 
-<h4>Testing the Model</h4></p>
-<p>Your application needs to do three main things:</p>
-<ol>
-  <li>Store data in some kind of data structure</li>
-  <li>Provide end users with the precise data they need</li>
-  <li>Control the data: create, read, update and delete documents</li>
-</ol>
-<p>One tried-and-tested way of doing these three things is to use the Model-View-Controller (MVC) pattern. You have already created a Model, to handle item 1, the storage of data. Your end-users will use their browsers to _view_ the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.</p>
-<p>You can read more about the Model-View-Controller pattern <a href="https://www.freecodecamp.org/news/the-model-view-controller-pattern-mvc-architecture-and-frameworks-explained/" class="external">here</a><span></span>.</p>
-<p>So now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
-Create <code>controllers/signup.js</code>, and give it the following script:
+<p>Create <code>controllers/signup.js</code>, and give it the following script:</p>
 <pre>
 <code class="language-javascript line-numbers"
 >const bcrypt = require('bcryptjs')
@@ -407,11 +434,17 @@ function signUp(req, res) {
   const { username, email, password } = req.body
 
   const hash = bcrypt.hashSync(password, 8)
-  const options = { username, email, hash }
+  const userData = { username, email, hash }
 
   let message
 
-  const treatSuccess = (user) => {
+  new User(userData)
+    .save()
+    .then(treatSuccess)
+    .catch(treatError)
+    .finally(proceed)
+
+  function treatSuccess(user) {
     const { username, email } = user
     message = {
       message: "User record created",
@@ -423,54 +456,132 @@ function signUp(req, res) {
     message = JSON.stringify(message, null, "  ")
   }
 
-  const treatError = error => {
+  function treatError(error) {
     message = `ERROR: User for "${username}" not saved
 ${error}`
   }
 
-  const proceed = () => {
+  function proceed () {
     console.log(message )
   }
-
-
-  new User(options)
-    .save()
-    .then(treatSuccess)
-    .catch(treatError)
-    .finally(proceed)
 }
 
 
 module.exports = signUp</code></pre>
-<p>The core of the script is the <code>signUp</code> function, which is exported at the end.</p>
+<p>The core of the script is the <code>signUp</code> function, which is exported at the end. The final action of the <code>signUp</code> function will be to log a message in the console.</p>
+<h4>Reading User Input from the <code>res</code> Object</h4>
+<pre data-start="5">
+<code class="language-javascript line-numbers"
+>function signUp(req, res) {
+  const { username, email, password } = req.body</code></pre>
 <p><button data-name="anchor-res-req">As you saw earlier</button>, when the server receives a request from a client, the Express app calls a function that has two parameters, which are conventionally called <code>req</code> and <code>res</code> (request and response). That's why the <code>signUp</code> function has these two parameters. In its current version, it only uses the <code>req</code> argument, but you'll be <button data-name="anchor-use-res">editing this function to use <code>res</code></button> later.</p>
 
-<p>Express can add read the data sent from the browser and store in a <code>body</code> object. (You'll see <button data-name="anchor-set-body">how to do that</button> soon). For now, you can assume that</p>
+<p>Express can add read the data sent from the browser and store in a <code>body</code> object. (You'll see <button data-name="anchor-set-body">how to do that</button> soon). For now, you can assume that:</p>
 <ul>
   <li>The <code>req</code> object contains a <code>body</code> object</li>
-  <li>The <code>req.body</code> object <i>will</i> have three key/value pairs: <code>username</code>, <code>email</code></li>
-  <li>All these values are strings.</li>
+  <li>The <code>req.body</code> object will have three key/value pairs: <code>username</code>, <code>email</code> and <code>password</code></li>
+  <li>All these values will be strings.</li>
 </ul>
 <p>(You'll see <button data-name="anchor-validate">how to check that this is true</button> shortly.)</p>
 
+<h4>Hashing the Password</h4>
+<pre data-start="8">
+<code class="language-javascript line-numbers"
+>  const hash = bcrypt.hashSync(password, 8)
+  const options = { username, email, hash }</code></pre>
+<p>You should never store a user's password in plain text anywhere on your servers. Instead, you should use a one-way encryption process to convert it to a hash. Later, when the user enters their password again to log in, you will apply the same encryption process to produce the same hash. Because this encryption is a one-way process, it is (currently) impossible to recover the original password from the hash.</p>
+<p>The <code>bcrypt</code> function (read in in line 1) performs the encryption process multiple times... 8 times in this case. Each repetition takes time, and this will slow down an attacker who tries to guess which password will generate the same hash.</p>
+<p>The <code>userData</code> object that will be saved to the database contains only the hash, and not the password.</p>
+<p>You can read more about bcrypt <a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/" class="external">here</a><span></span>.</p>
 
-3. Create `controllers/index.js`:
-```javascript
-const signUp = require('./signup')
+<h4>Saving is Asynchronous</h4>
+<pre data-start="11">
+<code class="language-javascript line-numbers"
+>let message
+
+new User(userData)
+  .save()
+  .then(treatSuccess)
+  .catch(treatError)
+  .finally(proceed)</code></pre>
+<p>Saving the data to a remote database can take an unpredictable amount of time, so the <code>save()</code> method of a Mongoose model returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="external">Promise</a><span></span>. If the operation succeeds, the <code>treatSuccess()</code> function will be called. If it fails for any reason, the <code>treatError()</code> function will be called with information about the error.</p>
+<p>In all cases, the <code>proceed()</code> function will be called. For now, <code>proceed()</code> simply logs the value of <code>message</code>. Both the <code>treatSuccess()</code> function and the <code>treatError()</code> will set the value of <code>message</code>, each in its own way.</p>
+
+<h4>Treating a Successful Save</h4>
+<pre data-start="19">
+<code class="language-javascript line-numbers"
+>function treatSuccess(user) {
+  const { username, email } = user
+  message = {
+    message: "User record created",
+    user: {
+      username,
+      email
+    }
+  }
+  message = JSON.stringify(message, null, "  ")
+}
+</code></pre>
+<p>If the <code>save</code> operation is successful, the promise will resolve with the value of the newly-created User document object. This will contain the same fields as the original <code>userData</code> object, plus some additional ones added by MongoDB for its internal use:</p>
+<pre>
+<code class="language-json"
+>{
+  _id: ObjectId('65f15604a91eca4f9dacab5b'),
+  "username": "Yan Wang",
+  "email": "yan@example.com",
+  "hash": "$2a$08$OVCBebqxKd14FLP0zDeaaONVq...",
+  __v: 0
+}</code></pre>
+
+<table>
+  <tbody>
+    <tr>
+      <th scope="row">_id</th>
+      <td>is a value that is guaranteed to be unique for any given collection. Here is the <a href="https://www.mongodb.com/docs/manual/reference/method/ObjectId/" class="external">official description</a><span></span>.</td>
+    </tr>
+    <tr>
+      <th scope="row">__v</th>
+      <td>is an integer version number. For a newly-created document, it will always have the value <code>0</code>. Each time you edit the document and save it again, the value will be incremented by 1.</td>
+    </tr>
+  </tbody>
+</table>
+<p>There is no need to share the <code>_id</code>, <code>hash</code> or <code>__v</code> fields with the client, so the message is created only from the <code>username</code> and <code>email</code> fields. The <code>message</code> object is converted to a string by <code>JSON.stringify</code> to make it easier to read in the console.</p>
+<h4>Handling an Error</h4>
+<pre data-start="31">
+<code class="language-javascript line-numbers"
+>function treatError(error) {
+  message = `ERROR: User for "${username}" not saved
+${error}`
+  }</code></pre>
+<p>If an error occurs, for any reason, no <code>User</code> document can be created, so an error is returned instead. This is used to create the message that will be printed in the console.</p>
+<h4>Logging to the Console: a Makeshift View</h4>
+<pre data-start="36">
+<code class="language-javascript line-numbers"
+>function proceed () => {
+  console.log(message )
+}</code></pre>
+<p>Because you haven't written any client-side code yet for the View, you can simply print the result in the console, and check if it is what you expected to see.</p>
+
+<h4>One Source for All Controllers</h4>
+<p>You only have one controller for now, so the next step may seem unnecessary. It just makes sure that everything will be neat and tidy now and in the future.</p>
+<p>Create a new file at <code>controllers/index.js</code> with the following script:</p>
+<pre>
+<code class="language-javascript line-numbers"
+>const signUp = require('./signup')
 
 module.exports = {
   signUp
-}
-```
+}</code></pre>
 
-4. Create `temp/addUser.js`
-```javascript
-const {
+<h4>A Temporary Script to Test the User Model</h4>
+<p>Now you can fake some registration input from an imaginary user. Create a new file at <code>temp/addUser.js</code> and give it the following script:</p>
+<pre data-start="1">
+<code class="language-javascript line-numbers"
+>const {
   signUp
 } = require('../controllers')
 
-
-const addUser = async () => {
+const addUser = () => {
   const req = {
     body: {
       username: "to_be_deleted",
@@ -482,51 +593,69 @@ const addUser = async () => {
   signUp(req)
 }
 
+module.exports = addUser</code></pre>
+<p>Notice how this script can read in the <code>signUp</code> function directly from the <code>index.js</code> script in the <code>controlers</code> directory, rather than explicitly from <code>../controllers/signup.js</code>. That is thanks to the previous step.</p>
+<p>This script exports a function which creates a <code>req</code> object which contains a <code>body</code> object which contains some fake login data in the format that the <code>signUp()</code> function expects.</p>
+<p>The last step in this process is to call this <code>addUser</code> function as soon as the connection with the MongoDB database is ready.</p>
 
-module.exports = addUser
-```
-
-5. Edit `database/index.js` to export `User` and call `addUser`:
-```javascript
-const DB = process.env.DB
+<h4>Adding a User, as a Proof-of-Concept</h4>
+<p>Now you need to make a small change to <code>database/index.js</code>, to read in the <code>addUser</code> function and call it:
+<pre>
+<code class="language-javascript line-numbers"
+><i>const DB = process.env.DB
 
 const mongoose = require('mongoose')
-const User = require('./models/user')                 // NEW LINE
+const User = require('./models/user')
 
 mongoose
   .connect(DB)
   .then(() => {
-    console.log(`Connected to ${DB}`)
-
-    // Temporary test to show that the database works // NEW LINE
-    require('../temp/addUser')()                      // NEW LINE
-
-  })
+    console.log(`Connected to ${DB}`)</i>
+    <s>// Temporary code to test the User model</s>
+    require('../temp/addUser')()
+  <i>})
   .catch( error => {
     console.log("DB connection ERROR:\n", error);
     process.exit()
   })
 
-
 const db = {
   mongoose,
-  User                                                 // NEW LINE
+  User
 }
 
+module.exports = db</i></code></pre>
 
-module.exports = db
-```
+<h4>Viewing the Result</h4>
+<p>If all went well, you should now see the following in the Terminal window where you ran <code>npm start</code>:</p>
 
-> ```
-> Connected to mongodb://localhost:27017/register  
-> {
->    message: 'User record created',
->    user: {
->      username: 'to_be_deleted',
->      email: 'delete@example.com'
->    }
->  }
-> ```
+<pre><code class="language-bash"
+>
+<s>[nodemon] restarting due to changes...
+[nodemon] starting `node server.js`</s>
+Express server listening at:
+  http://localhost:5555
+  http://127.0.0.1:5555
+  http://192.168.0.12:5555
+  http://192.168.0.10:5555
+  
+Connected to mongodb://localhost:27017/register
+{
+  "message": "User record created",
+  "user": {
+    "username": "to_be_deleted",
+    "email": "delete@example.com"
+  }
+}</code></pre>
+<p>If so, well done! You've already made good progress.</p>
+<aside class="question">
+  <h3>Question: When you follow a tutorial, step by step, how can you be sure that you are actually learning anything?</h3>
+  <p>One excellent way to learn is to teach someone else. If you do not fully understand what you are doing, and why you are doing it, you will discover the gaps in your knowledge when you try to share it.</p>
+  <p>And why not be your own student?</p>
+  <p>Now that you have succeeded in creating a User record by following this series of instructions, try to start again from the beginning, and get to the same point, without the help of these instructions.</p>
+  <p>You have your own coding style, and I have mine. If you have understood the reason for each script and each function, then you should be able to recreate the same functionality, using the techniques that you feel most comfortable with.</p>
+</aside>
+<!-- 
 4. To view the newly created document(s), in new Terminal window run:
 ```
 mongosh
@@ -551,7 +680,7 @@ db.users.drop()
 ```
 >```
 >true
->```
+>``` -->
 </section>
 
 <section id="intro">

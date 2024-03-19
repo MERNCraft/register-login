@@ -304,15 +304,19 @@ function toggleMenu() {
 
 foot.addEventListener("mouseup", goSection)
 
-function goSection({ target: button }) {
-  const { id } = button
+function goSection({ target }) {
+  let { id } = target
+  if (!id) {
+    return
+  }
+  id = id.replace("-name", "")
   let direction = [0, "previous", 0, "next"].indexOf(id)
   // -1, 1, 3
   if (direction < 0) {
     return
   }
 
-  const index = sectionIds.indexOf(target)
+  const index = sectionIds.indexOf(hash)
               + direction - 2
   const sectionId = sectionIds[index]
   location.hash = sectionId

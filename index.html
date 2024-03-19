@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register and Log In</title>
 
-  <link rel="stylesheet" href="tutorial/menu.css">
-  <link rel="stylesheet" href="tutorial/content.css">
+  <link rel="stylesheet" href="tutorial/styles.css">
   <link rel="stylesheet" href="tutorial/prism/prism.css">
 
+  
+  <script defer src="tutorial/storage.js"></script>
   <script defer src="tutorial/script.js"></script>
   <script defer src="tutorial/prism/prism.js"></script>
 </head>
@@ -24,7 +25,7 @@
 id="bare-bones-server"
 data-item="Basic Express Server"
 >
-<h2>A Bare-bones Express Server</h2>
+<h2>1. A Bare-bones Express Server</h2>
 <p>You can start by creating an empty directory called <code>backend</code>. In a Terminal window type the following commands:</p>
 <pre><code class="language-bash">mkdir backend && cd backend</code></pre>
 <aside class="vscode">
@@ -132,7 +133,7 @@ app.listen(3000)</code></pre>
   id="friendly-server"
   data-item="A Better Server"
 >
-  <h2>A More Self-Aware Server</h2>
+  <h2>2. A More Self-Aware Server</h2>
   <p>Now that you know that your server can serve data to your browser, you can make it tell you more about what it's doing. With the code listing below:</p>
   
   <ul>
@@ -200,7 +201,7 @@ Express server listening at:
   id="nodemon"
   data-item="Automatic Restart"
 >
-<h2>Automatically Restarting Your Server with Nodemon</h2>
+<h2>3. Automatically Restarting Your Server with Nodemon</h2>
 <p>It can become tedious to stop your server and restart it every time you change the script. The <code>nodemon</code> can watch your scripts and restart the server every time you save the file.</p>
 <p>To install <code>nodemon</code> as a development dependency, run the following command in the terminal:</p>
 <pre><code class="language-bash"
@@ -251,12 +252,11 @@ Express server listening at:
   http://192.168.0.10:3000</code></pre>
 </section>
 
-
 <section
   id="connect-to-mongodb"
   data-item="Connect to MongoDB"
 >
-<h2>Connecting to your MongoDB Cluster</h2>
+<h2>4. Connecting to your MongoDB Instance</h2>
 <p>In order to use MongoDB, you either need to <a href="https://www.mongodb.com/docs/manual/administration/install-community/" class="external">install the Community Edition</a><span></span> on your development computer, or <a href="https://www.mongodb.com/basics/mongodb-atlas-tutorial" class="external">create an account with MongoDB Atlas</a><span></span>. At the end of either process, you should have a connection string. I installed the Community Edition on my development computer, so the string looks like this:</p>
 <pre><code>mongodb://localhost:27017/register</code></pre>
 <p>If you sign up with MongoDB Atlas, you should have a string that might look like this:</p>
@@ -319,7 +319,14 @@ Express server listening at:
 <u>Connected to mongodb://localhost:27017/register</u>
 </code></pre>
 <aside class="alert">
-  <p>If you see an error, check that your MongoDB connection string is correct. You may have to run <code>npm start</code> again after you correct your code, to restart <code>nodemon</code>.</p>
+  <p>If you see an error message, read it carefully. It may contain suggestions on how to fix the problem. Perhaps you will need to:</p>
+  <ul>
+    <li>Check that your MongoDB connection string is correct</li>
+    <li>Whitelist your current IP address with MongoDB Atlas, if that's what you are using</li>
+    <li>Switch off or switch on your VPN, if you use one</li>
+    <li>Check your Internet connection</li>
+  </ul>
+<p>After you solve the problem, you may have to press <code>Ctrl-C</code> in your Terminal to stop <code>nodemon</code> and then run <code>npm start</code> again to start it up again.</p>
 </aside>
 </section>
 
@@ -327,7 +334,7 @@ Express server listening at:
   id="user-model"
   data-item="User Records Model"
 >
-<h2>Creating and Testing a Model for User Records</h2>
+<h2>5. Creating and Testing a Model for User Records</h2>
 <p>MongoDB saves documents in <i>collections</i> in a <a href="https://www.mongodb.com/docs/drivers/java/sync/current/fundamentals/data-formats/document-data-format-bson/" class="external">Binary JSON format</a><span></span>. The Mongoose module helps you to ensure that all documents in a given collection have the same structure. Mongoose will prevent you from saving a document with an unexpected structure, so you have fewer problems to worry about.</p>
 <h4>Defining the Structure of a Model</h4>
 <p>One structure that makes sense for a User document is an object like this:</p>
@@ -407,7 +414,7 @@ module.exports = db</i></code></pre>
       </tr>
       <tr>
         <th scope="row">The View</th>
-        <td>is what you see now on the stage, and the interaction between the audience and the actors. The actors will produce a different performance if the audience applauds them than if they throw tomatoes.</td>
+        <td>is a specific snapshot of the Model. It is what you see <i>now</i> on the stage, and the interaction between the audience and the actors. The actors will produce a different performance if the audience applauds them than if they throw tomatoes.</td>
       </tr>
       <tr>
         <th scope="row">The Controller</th>
@@ -415,12 +422,13 @@ module.exports = db</i></code></pre>
       </tr>
     </tbody>
   </table>
-  <p>You have already created a Model, to handle item 1 — the storage of data.</p>
-  <p>Your end-users will use their browsers to View the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.<br>There's just one problem: you haven't started writing any code for this yet. As a temporary workaround, you can create some dummy form data and print the content that it generates in the console.</p>
-  <p>Now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
-  </ul>
   <p>You can read more about the Model-View-Controller pattern <a href="https://www.freecodecamp.org/news/the-model-view-controller-pattern-mvc-architecture-and-frameworks-explained/" class="external">here</a><span></span>.</p>
 </aside>
+  <p>You have just created a Model, to handle item 1 — the storage of data.</p>
+  <p>Your end-users will use their browsers to View the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.</p>
+  <p>There's just one problem: you haven't started writing any code for this yet. You'll need a temporary stop-gap solution. As you'll soon see, you can create some dummy form data and print the content that it generates in the console. </p>
+  <p>Now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
+  </ul>
 <h4>Using the Model</h4></p>
 
 <p>Create <code>controllers/signup.js</code>, and give it the following script:</p>
@@ -532,7 +540,6 @@ new User(userData)
   "hash": "$2a$08$OVCBebqxKd14FLP0zDeaaONVq...",
   __v: 0
 }</code></pre>
-
 <table>
   <tbody>
     <tr>
@@ -554,7 +561,7 @@ new User(userData)
 ${error}`
   }</code></pre>
 <p>If an error occurs, for any reason, no <code>User</code> document can be created, so an error is returned instead. This is used to create the message that will be printed in the console.</p>
-<h4>Logging to the Console: a Makeshift View</h4>
+<h4>Logging to the Console: a Stop-gap View</h4>
 <pre data-start="36">
 <code class="language-javascript line-numbers"
 >function proceed () => {
@@ -655,32 +662,236 @@ Connected to mongodb://localhost:27017/register
   <p>Now that you have succeeded in creating a User record by following this series of instructions, try to start again from the beginning, and get to the same point, without the help of these instructions.</p>
   <p>You have your own coding style, and I have mine. If you have understood the reason for each script and each function, then you should be able to recreate the same functionality, using the techniques that you feel most comfortable with.</p>
 </aside>
-<!-- 
-4. To view the newly created document(s), in new Terminal window run:
-```
-mongosh
-use register
-> switched to db register
-db.users.find()
-```
-> Outputs many objects with a format like:
-> ```
->{
->    _id: ObjectId('65ea03b4d229099a43b80419'),
->    username: 'to_be_deleted',
->    email: 'delete@example.com',
->    hash: '$2a$08$8tMlYhsOPSOjuaeEU1L2WupnvUUqxrc7jywNHUAR00aLHRI/TuZBC',
->    __v: 0
->  }
-> ```
+</section>
 
-5. To delete these new documents, along with the whole `users` collection, run:
-```
-db.users.drop()
-```
->```
->true
->``` -->
+<section
+  id="mongosh"
+  data-item="Using mongosh"
+>
+  <h2>6. Connecting to Your Database with <code>mongosh</code></h2>
+  <p>If you are using <code>nodemon</code> to run your server, then the server will be restarted each time you save your changes. to any of the files in your project. This means that the <code>addUser()</code> function will probably have run many times before you get here, and your Users collection will now contain many <i>many</i> documents for the same user.</p>
+  <p>Fortunately, MongoDB makes it easy for you to see exactly what data is stored in your database. The tool it provides for that is called <code>mongosh</code>, where the <code>sh</code> is short for "shell".</p>
+
+  <h4>Running <code>mongosh</code> with MongoDB Community Edition</h4>
+  <p></p>
+  <p>If you <a href="https://www.mongodb.com/docs/manual/administration/install-community/" class="external">installed MongoDB Community Edition</a><span></span> on your development computer, you will already have a program called <code>mongosh</code> installed.</p>
+  <aside>
+    <p>If you are using MongoDB Atlas, <button data-name="anchor-compass">skip ahead</button> to see how to use <code>mongosh</code> with the Compass app.</p>
+  </aside>
+  <p>You can open a new Terminal window and type the command...</p>
+  <pre><code class="language-bash"
+  >mongosh</code></pre>
+  <p>This will launch the program. You can now use the following commands:
+  <table name="anchor-mongosh">
+    <tbody>
+      <tr>
+        <th scope="row"><code class="language-bash">use register</code></th>
+        <td># to select the <code>register</code> database</td>
+      </tr>
+      <tr>
+        <th scope="row">db.users.find()</th>
+        <td># to list all the User documents</td>
+      </tr>
+      <tr>
+        <th scope="row"><code class="language-bash">db.users.drop()</code></th>
+        <td># to remove the entire <code>users</code> collection, and all the documents in it. This is a very destructive action, and you will want to use it only at the beginning of your project, when the database contains no data of any importance.</td>
+      </tr>
+    </tbody>
+  </table>
+    </p> 
+  <pre><code class="language-bash"
+  >backend % <b>mongosh</b>
+Current Mongosh Log ID: 65f9586563497cd18faa85f2
+Connecting to:          mongodb://127.0.0.1:27017/?
+<i>...</i>
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+
+test> <b>use register</b>
+switched to db register
+register> <b>db.users.find()</b>
+[
+  {
+    _id: ObjectId('65f15604a91eca4f9dacab5b'),
+    username: 'to_be_deleted',
+    email: 'delete@example.com',
+    hash: '$2a$08$OVCBebqxKd14FLP0zDeaaONVqw5Z6Rrx/Cq68zWST3jkiffC.vZ/K',
+    __v: 0
+  },
+  <i>...</i>
+  {
+    _id: ObjectId('65f95849bb18007870fc0ad3'),
+    username: 'to_be_deleted',
+    email: 'delete@example.com',
+    hash: '$2a$08$QzxDsN1jHAraFgawkCE/R.EWiMA1dPCbwXWgpiddhv5unfN3z4Jzu',
+    __v: 0
+  }
+]
+register> <b>db.users.drop()</b>
+<u>true</u>
+register> <b>db.users.find()</b>
+
+register></code></pre>
+<h4 name="anchor-compass">Using <code>mongosh</code> with Compass</h4>
+<p>If you are working with <a href="https://www.mongodb.com/atlas/database" class="external">MongoDB Atlas</a><span></span>, you can download <a href="https://www.mongodb.com/products/tools/compass" class="external">Compass</a><span></span>, the free GUI tool for interacting with your Atlas.</p>
+<ol>
+  <li>Choose the menu item Connect > New Connection</li>
+  <li>In the URI field, enter in the same link that you used as the value for <code>DB</code> in the <code>.env</code> file</li>
+  <li>Click Connect</li>
+</ol>
+
+<img src="tutorial/images/new_connection.png">
+<ol start="4">
+  <li>Along the very bottom of the window, you will see a narrow field with the title >_MONGOSH. Click on the resize bar at the top of the title and pull it upwards, so that there is plenty of space to work in.</li>
+</ol>
+<img src="tutorial/images/mongosh.png">
+<ol start="5">
+  <li>Use the same commands as <button data-name="anchor-mongosh">detailed above</button>:<br>
+  <ul>
+    <li>use register</li>
+    <li>db.users.find()</li>
+    <li>db.users.drop()</li>
+  </ul>
+</li>
+</ol>
+<img src="tutorial/images/compass.png">
+<p>You can learn more about <code>mongosh</code> in <a href="https://www.mongodb.com/docs/mongodb-shell/" class="external">the official MongoDB documentation</a><span></span>.</p>
+</section>
+
+<section
+  id="sign-up"
+  data-item="Sign Up in Browser"
+>
+  <h2>7. Providing Sign Up Access from a Browser</h2>
+  <p>Content</p>
+</section>
+
+<section
+  id="validation"
+  data-item="Validating Input"
+>
+  <h2>8. Validating User Input with Middleware</h2>
+  <p>Create `middleware/validationSignup.js` to check whether:</p>
+  
+  <ul>  
+    <li>The given username is a non-empty string</li>
+    <li>The given username already exists</li>
+    <li>The given email is valid</li>
+    <li>The given email already exists</li>
+    <li>The password is a non-empty string</li>
+  </ul>
+  
+<pre>
+<code class="language-javascript line-numbers"
+>const { User } = require('../database')
+
+
+const validateSignup = async (req, res, next) => {
+  // These are the values that need to be checked
+  const { username, email, password } = req.body
+
+  // If status and message remain falsy, username, email and
+  // roles are all valid; next() will be called. If not,
+  // res.status(status).send({ message }) will be called.
+  let status = 0
+  let message = ""
+
+  // Treating issues
+  const treatDuplicateUsername = user => {
+    if (user) {
+      const username = user.username
+      status = 400 // Bad Request
+      message = `FAIL: username "${username}" is already taken`
+    }
+  }
+
+  const treatInvalid = data => {
+    const [ key, value ] = Object.entries(data)[0]
+    status = 400 // Bad Request
+    message = `FAIL: "${value}" is not a valid ${key}`
+    proceed()
+  }
+
+  const treatDuplicateEmail = user => {
+    if (user) {
+      const email = user.email
+      status = 400 // Bad Request
+      message = `FAIL: email "${email}" is already taken`
+    }
+  }
+
+  const treatDBError = error => {
+    status = 500 // Internal Server Error
+    message = { error: error.message }
+  }
+
+  // Start the chain of checks
+
+  ;(function checkUsername(){
+    if (!username) {
+      treatInvalid({ username })
+
+    } else {
+      User
+      .findOne({ username })
+      .exec() // exec() makes the output of findOne() a Promise
+      .then(treatDuplicateUsername)
+      .catch(treatDBError)
+      .finally(checkEmail)  
+    }
+  })()
+  
+  function checkEmail() {
+    if (!status) { // There was no problem with username
+      if (email.indexOf("@") < 0) {
+        treatInvalid({ email })
+
+      } else {
+        User
+        .findOne({ email })
+        .exec() // makes the output of findOne() a Promise
+        .then(treatDuplicateEmail)
+        .catch(treatDBError)
+        .finally(checkPassword)
+      }
+    } else {
+      proceed()
+    }
+  }
+
+  function checkPassword() {
+    if (!status && !password ) {
+      treatInvalid({ password })
+
+    } else {
+      proceed()
+    }
+  }
+
+  function proceed() {
+    if (status) {
+      // There was an error in the input values 
+      res.status(status).send(message)
+
+    } else {
+      // No error: time to create a new user
+      next()
+    }
+  }
+}
+
+
+module.exports = validateSignup</code></pre>
+
+<p>Create `middleware/index.js`:</p>
+<pre>
+<code class="language-javascript line-numbers"
+>const validateSignup = require('./validationSignup')
+
+module.exports = {
+  validateSignup
+}</code></pre>
 </section>
 
 <section id="intro">
@@ -692,8 +903,8 @@ db.users.drop()
 <ol>
   <li><a href="#bare-bones-server">Set up an Express backend server</a></li>
   <li><a href="#connect">Connect the server to a MongoDB database</a></li>
-  <li><a href="#user-model">Create a Mongoose model for User records in the <a >database</a></li>
-  <li><a href="#">Test that your model works as planned</a></li>
+  <li><a href="#user-model">Create a Mongoose model for User records in the database</a></li>
+  <li><a href="#validation">Test that your model works as planned</a></li>
   <li><a href="#">Allow new users to sign up</a></li>
   <li><a href="#">Let new users sign in to their account</a></li>
   <li><a href="#">Provide privileged data to signed-in users</a></li>
@@ -704,13 +915,25 @@ db.users.drop()
   <li><a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm" class="external">Downloaded and installed Node.js and NPM</a><span></span></li>
   <li><a href="https://www.mongodb.com/docs/atlas/getting-started/" class="external">Set up a MongoDB database</a><span></span></li>
 </ul>
-<p>You should also have familiarity with basic bash commands in a Terminal window, and specifically with <code>npm</code> commands.</p>
+<p>You should be familiar with:</p>
+<ul>
+  <li>Basic bash commands in a Terminal window</li>
+  <li>The most common <code>npm</code> commands</li>
+  <li>HTML forms</li>
+  <li>The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" class="external"><code>fetch API</code></a><span></span>, which allows a browser to retrieve data from a server.</li>
+</ul>
 <div class="repo">
   <a href="https://github.com/MERNCraft/register-login">
     <img src="tutorial/images/github.svg" alt="github logo">
     <span>GitHub repository</span>
   </a>
 </div>
+<aside class="tip center feedback-small">
+  <p>If you have any difficulties with this tutorial, or any suggestions on how to improve it, please <a href="https://github.com/MERNCraft/register-login/issues/new">submit&nbsp;an&nbsp;issue&nbsp;on&nbsp;GitHub</a>.</p>
+</aside>
+<aside class="tip center feedback-wide">
+  <p>If you have any difficulties with this tutorial,<br>or any suggestions on how to improve it,<br>please <a href="https://github.com/MERNCraft/register-login/issues/new">submit an issue on GitHub</a>.</p>
+</aside>
 <hr>
 <aside class="warn">
   <p>In this tutorial, you <strong>won't</strong> be learning:</p>
@@ -718,6 +941,7 @@ db.users.drop()
   <ul>
     <li>How to check ownership of an email address*</li>
     <li>How to reset a forgotten or compromised password*</li>
+    <li>How to use a testing framework like <a href="https://jestjs.io/" class="external">Jest</a><span></span> for automated testing</li>
     <li>How to deploy your server to a hosting service*</li>
     <li>How to <a href="https://github.com/MERNCraft/CORS-backend/blob/main/README.md">use CORS to connect to the backend from a different frontend host</a></li>
   </ul>
@@ -784,8 +1008,10 @@ db.users.drop()
 
     <ul id="menu-items">
       <li class="spacer"></li>
+      <a class="feedback" href="https://github.com/MERNCraft/register-login/issues/new">Feedback</a>
       <li class="repo">
         <a
+          class="feedback"
           href="https://github.com/MERNCraft/register-login"
         >
           <img src="tutorial/images/github.svg" alt="github logo">

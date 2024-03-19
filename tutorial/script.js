@@ -7,7 +7,7 @@
  * Also controls a footer with #previous and #next buttons.
  */
 
-
+const storage = new Storage()
 
 const main     = document.getElementById("main")
 const menu     = document.getElementById("menu")
@@ -64,7 +64,7 @@ const sectionIds = []
 const sectionNames = []
 const menuItems = []
 let hash = ""
-let tops = {}
+let tops = storage.getItem("tops") || {}
 let activeItem
 let noHash
 let blocks // array of elements in main, sorted by top
@@ -72,12 +72,16 @@ let blocks // array of elements in main, sorted by top
 
 
 const lastIndex = sections.length - 1
-const items = sections.forEach(( section, index ) => {
+sections.forEach(( section, index ) => {
   const { id } = section
   if (id) {
     const header = section.firstElementChild
     const sectionName = section.dataset.item || getStartOfText(header)
-    tops[id] = 0
+
+    if (!(id in tops)) {
+      // This section has just been added
+      tops[id] = 0
+    }
 
     const li = document.createElement("li")
     li.setAttribute("id", `menu-item-${id}`)
@@ -262,6 +266,7 @@ function setScrollMeasure() {
   }
 
   tops[hash] = measure
+  storage.set({ tops })
 }
 
 

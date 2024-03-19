@@ -116,13 +116,19 @@ sections.forEach(( section, index ) => {
 hashChange()
 
 
+// Workaround needed for Safari prior to 17.4 (2024-03-05)
+function checkVisibility(node) {
+  const { width, height } = node.getBoundingClientRect()
+  return !!width || !!height
+}
 
 function getVisibleBlocks() {
   let all = [];
 
   function isVisibleBlock(node) {
     const notBlock = blockTagNames.indexOf(node.tagName) < 0
-    const isVisible = node.checkVisibility()
+    // const isVisible = node.checkVisibility()
+    const isVisible = checkVisibility(node)
     return !notBlock && isVisible
   }
 

@@ -128,7 +128,7 @@ h4 {
 
 code b,
 code b * {
-    color: #f60!important;
+  color: #f60!important;
   font-weight: 400;
 }
 
@@ -162,7 +162,8 @@ code s * {
   text-decoration: none;
 }
 
-aside {
+aside,
+blockquote {
   background-color: #020;
   padding: 0.25em 1em;
   border-left: 1em solid #040;
@@ -188,6 +189,11 @@ aside.tip {
   border-color: #973
 }
 
+aside.tip pre,
+aside.tip p code {
+    background-color: #440;
+}
+
 aside.warn {
   background-color: #320;
   border-color: #643
@@ -208,6 +214,10 @@ aside.question {
   border-color: #606;
 }
 
+aside.question code {
+  background-color: #525;
+}
+
 li,
 br {
   margin-bottom: 0.5em;
@@ -226,6 +236,11 @@ img {
   margin: 0 auto;
 }
 
+blockquote {
+  background-color: #444;
+  border-color: #666;
+}
+
 /* LINKS / LINKS / LINKS / LINKS / LINKS / LINKS / LINKS */
 
 a {
@@ -240,7 +255,7 @@ a.external {
   color: #9cf;
 }
 
-a.external + span {
+a.external span {
   display: inline-block;
   width: 12px;
   height: 12px;

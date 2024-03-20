@@ -3,7 +3,7 @@
  *
  * Plain vanilla script to populate and control a menu which
  * slides out when its hamburger icon is clicked.
- * 
+ *
  * Also controls a footer with #previous and #next buttons.
  */
 
@@ -70,7 +70,6 @@ let noHash
 let blocks // array of elements in main, sorted by top
 
 
-
 const lastIndex = sections.length - 1
 sections.forEach(( section, index ) => {
   const { id } = section
@@ -113,11 +112,10 @@ sections.forEach(( section, index ) => {
 })
 
 
-hashChange()
-
 
 // Workaround needed for Safari prior to 17.4 (2024-03-05)
-function checkVisibility(node) {
+// where checkVisibility() is missing
+function isVisible(node) {
   const { width, height } = node.getBoundingClientRect()
   return !!width || !!height
 }
@@ -125,18 +123,11 @@ function checkVisibility(node) {
 function getVisibleBlocks() {
   let all = [];
 
-  function isVisibleBlock(node) {
-    const notBlock = blockTagNames.indexOf(node.tagName) < 0
-    // const isVisible = node.checkVisibility()
-    const isVisible = checkVisibility(node)
-    return !notBlock && isVisible
-  }
-
   function getDescendants(node) {
     for (var i = 0; i < node.children.length; i++) {
       var child = node.children[i];
 
-      if (isVisibleBlock(child)) {
+      if (isVisible(child)) {
         getDescendants(child);
         if (!ignoreElement(child)) {
           all.push(child);
@@ -159,6 +150,7 @@ function getVisibleBlocks() {
 }
 
 
+
 // Scroll to the last position shown for the chosen page
 window.addEventListener("hashchange", hashChange)
 
@@ -166,15 +158,15 @@ function hashChange() {
   // The hash change will show the associated section, and place
   // the section at the top of the viewport.
   hash = (location.hash || noHash).replace("#", "")
-  
-  // Update the list of block elements that are now visible
-  blocks = getVisibleBlocks()
-  
+
   // Update the section names in the footer
   setPreviousAndNext(hash)
 
   // Hilite the associated button in the menu
   setTargetClassInMenu(hash)
+
+  // Update the list of block elements that are now visible
+  blocks = getVisibleBlocks()
 
   // Scroll all the way to the top (to show the header)...
   main.scrollTo({ top: 0 })
@@ -243,7 +235,7 @@ function setScrollMeasure() {
   // Check if the section is scrolled all the way to the end...
   const { scrollHeight, offsetHeight, scrollTop } = main
   const atEnd = scrollTop > scrollHeight - offsetHeight - endFudge
-  
+
   let measure
 
   if (atEnd) {
@@ -272,6 +264,7 @@ function setScrollMeasure() {
   }
 
   tops[hash] = measure
+
   storage.set({ tops })
 }
 
@@ -339,7 +332,7 @@ function getStartOfText(element) {
   const stop = [".", "!", "?", "\""]
 
 
-  let text = element.textContent
+  let text = element.innerText // only visible text
   const length = text.length
   if (length > linkLength) {
     text = text.slice(0, linkLength)
@@ -373,8 +366,8 @@ function showAnchor({ target }) {
       return
     }
 
-    hash = anchor.closest("section[id]").id    
-    location.hash = hash  
+    hash = anchor.closest("section[id]").id
+    location.hash = hash
     anchor.classList.add("highlight")
 
     // The hashchange event won't be immediate, but it will scroll
@@ -382,10 +375,11 @@ function showAnchor({ target }) {
     // before scrolling to the anchor and removing the highlight.
     setTimeout(() => {
       anchor.scrollIntoView()
-      anchor.classList.remove("highlight") 
+      anchor.classList.remove("highlight")
     }, 10)
   }
 }
+
 
 // https://www.freecodecamp.org/news/javascript-debounce-example/
 // USAGE //
@@ -411,7 +405,8 @@ function debounce(debouncedFunction, delay = 300) {
   };
 }
 
-
+// Wait for Prism to finish syntax highlighting before
+setTimeout(hashChange, 0)
 
 // Close the menu, now that the user has seen where it is
 setTimeout(toggleMenu, closeDelay)

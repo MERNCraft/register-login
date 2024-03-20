@@ -83,7 +83,7 @@ data-item="Basic Express Server"
 <p>Open the <code>node_modules</code> directory, to see all the files that it now contains. On my computer, it contains over 12 MB of code files, even before you've written a line of code yourself.</p>
 <h4>Writing Your Own Express Server</h4>
 <p>Create a file called `server.js` at the root of your project:</p>
-<pre>
+<pre name="anchor-hello">
 <code class="language-javascript line-numbers"
 >const express = require('express')
 const app = express()
@@ -142,7 +142,7 @@ app.listen(3000)</code></pre>
     <li>I use the <i>response</i> object (<code>res</code>) to send a message back to the browser with this useful information, all prettily wrapped up in an HTML <code>&lt;pre&gt;</code> tag.</li>
     <li>Finally, I use a callback function (<code>logStuffToConsole</code>) to gather information from the operating system so that I can print out in the Terminal all the different URLs that the server is connected to. This uses some quite advanced techniques that you won't need to use in other places, so you can simply admire the result in your Terminal (see below).</li>
   </ul>
-<pre>
+<pre name="anchor-server">
 <code class="language-javascript line-numbers"
 >const PORT = 3000
 <i>const express = require('express')
@@ -469,7 +469,7 @@ ${error}`
   }
 
   function proceed () {
-    console.log(message )
+    res.send(message )
   }
 }
 
@@ -560,13 +560,13 @@ new User(userData)
 ${error}`
   }</code></pre>
 <p>If an error occurs, for any reason, no <code>User</code> document can be created, so an error is returned instead. This is used to create the message that will be printed in the console.</p>
-<h4>Logging to the Console: a Stop-gap View</h4>
+<h4>Sending a Response</h4>
 <pre data-start="36">
 <code class="language-javascript line-numbers"
 >function proceed () => {
-  console.log(message )
+  res.send(message )
 }</code></pre>
-<p>Because you haven't written any client-side code yet for the View, you can simply print the result in the console, and check if it is what you expected to see.</p>
+<p>You've used <code>res.send()</code> twice before. Once to <button data-name="anchor-hello">send a simple "Hello from Express" message</button>, and once to <button data-name="anchor-server">send information about the server</button>. In just a moment, you will <button data-name="anchor-mock">write a mock <code>res</code> object</button> that will divert the <code>send</code> function to serve a different purpose.</p>
 
 <h4>One Source for All Controllers</h4>
 <p>You only have one controller for now, so the next step may seem unnecessary. It just makes sure that everything will be neat and tidy now and in the future.</p>
@@ -581,7 +581,7 @@ module.exports = {
 
 <h4>A Temporary Script to Test the User Model</h4>
 <p>Now you can fake some registration input from an imaginary user. Create a new file at <code>temp/addUser.js</code> and give it the following script:</p>
-<pre data-start="1">
+<pre data-start="1" name="anchor-mock">
 <code class="language-javascript line-numbers"
 >const {
   signUp
@@ -595,17 +595,28 @@ const addUser = () => {
       password: "p455w0rd"
     }
   }
+  const res = {
+    send(message) {
+      console.log("message:", message);
+    }
+  }
 
-  signUp(req)
+  signUp(req, res)
 }
 
 module.exports = addUser</code></pre>
 <p>Notice how this script can read in the <code>signUp</code> function directly from the <code>index.js</code> script in the <code>controlers</code> directory, rather than explicitly from <code>../controllers/signup.js</code>. That is thanks to the previous step.</p>
-<p>This script exports a function which creates a <code>req</code> object which contains a <code>body</code> object which contains some fake login data in the format that the <code>signUp()</code> function expects.</p>
-<p>The last step in this process is to call this <code>addUser</code> function as soon as the connection with the MongoDB database is ready.</p>
+<p>This script exports a function named <code>addUser</code>. This creates two simple objects to mimic the key functionality of the <code>req</code> and <code>res</code> objects that you saw earlier.
+  
+<ul>
+  <li>The <code>req</code> object contains a <code>body</code> object which contains some fake login data in the format that the <code>signUp()</code> function expects.</li>
+  <li>The <code>res</code> object contains a <code>send()</code> function, which simply logs a message to the console in the Terminal.</li>
+</ul>
+  
+  </p>
 
 <h4>Adding a User, as a Proof-of-Concept</h4>
-<p>Now you need to make a small change to <code>database/index.js</code>, to read in the <code>addUser</code> function and call it:
+<p>The last step in this process is to call this <code>addUser</code> function as soon as the connection with the MongoDB database is ready. To do this, you need to make a small change to <code>database/index.js</code>, to read in the <code>addUser</code> function and call it:
 <pre>
 <code class="language-javascript line-numbers"
 ><i>const DB = process.env.DB
@@ -936,6 +947,7 @@ const routes = app => {
 
 module.exports = routes</code></pre>
 <p>All this does is to tell your server <code>app</code> to call <button data-name="anchor-signup">the <code>signUp</code> function</button> that you created earlier when a <code>POST</code> request is made to <code>/signup</code>... which is exactly what happens when you submit the form.</p>
+<p>The <code>signUp()</code> function will now receive two arguments: both <code>req</code> and <code>res</code>. </p>
 <p>Now you have to add a line to <code>server.js</code>, so that it is able to use this new script.</p>
 <pre>
   <code class="language-javascript line-numbers"
@@ -977,7 +989,7 @@ module.exports = routes</code></pre>
  as it is undefined.
    at signUp (.../backend/controllers/signup.js:6:11)
    at Layer.handle [as handle_request] ...</code></pre>
-<p>This tells you that the <code>signUp()</code> function <i>was</i> called, and that the error occurred with <code>req.body</code> on line 6:</p>
+<p>This tells you that the <code>signUp()</code> function <i>was</i> called, and that the error occurred because <code>req.body</code> on line 6 is undefined:</p>
 <pre data-start="5">
 <code class="language-javascript line-numbers"
 >function signUp(req, res) {
@@ -1078,15 +1090,95 @@ app.listen(PORT, logStuffToConsole)
 
 <i>&lt;/body&gt;
 &lt;/html&gt;</i></code></pre>
+<aside class="question">
+  <h3>How is this different from a basic HTML form?</h3>
+  <p>The script reads in the <code>method</code> and the <code>action</code> of the form, and creates a <code>headers</code> object to tell the server that this time, the <code>Content-Type</code> of the data will be <code>"application/json"</code>.</p>
+  <blockquote>
+    A JSON string can be stored in its own file, which is basically just a text file with an extension of .json, and a MIME type of application/json.
+
+  <cite><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON#sect1" class="external">MDN Web Docs<span></span></a></cite>
+  </blockquote>
+  <p>The <code>onsubmit</code> event listener intercepts the native HTML submission process. It creates a variable named <code>body</code> which contains a JSON string representing the data that you entered into the form.</p>
+  <p>The conversion process takes two steps. First, the <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData" class="external">FormData interface<span></span></a> is used to generate an object containing the form data. But a FormData object cannot be converted to a JSON string directly; you first have to convert it to a regular object, using <code>Object.fromEntries(formData)</code> and then serialize that with <code>JSON.stringfy()</code>.</p>
+  <p>The <code>fetch</code> command takes two arguments: the URL for making the request to the server, and an object describing</p>
+  <ul>
+    <li>The method the server should use to process the request</li>
+    <li>The type of content that is being sent</li>
+    <li>The content itself (<code>body</code>)</li>
+  </ul>
+  <p>The <code>fetch</code> method returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="external">Promise<span></span></a>, which will be fulfilled some time in the future. If all goes well, and the response contains a JSON string, then this will be converted to an object and logged to the browser console. If not, an error message will be shown, explaining what went wrong.</p>
+  <p>Note that the browser will remain on the same page, and the display on the page will not change.</p>
+</aside>
+<h4>Making a JSON-based Request</h4>
+<p>In your browser, visit the page <a href="http://localhost:5555/signup">localhost:5555/signup</a> again, fill in the form and press Register. And again you get an error. What is it this time?</p>
+<img src="tutorial/images/syntax_error.png" alt="Internal Server Error">
+<p>If you read <a href="https://expressjs.com/en/api.html#express.urlencoded" class="external">the official Express documentation<span></span></a> for <code>express.urlencoded</code> carefully, you will have seen that it:</p>
+<blockquote>
+  only parses <b>urlencoded</b> bodies and only looks at requests where the Content-Type header matches ...<b>"application/x-www-form-urlencoded"</b>
+</blockquote>
+<p>And the script that you have just added to the sign-up form explicitly sets the <code>Content-Type</code> header to <code>"application/json"</code>:</p>
+<pre data-start="88">
+<code class="language-javascript line-numbers"
+>const headers = {
+  "Content-Type": "application/json"
+}</code></pre>
+<p>The solution is not far away. On the same page as the description of <code>express.urlencode</code>, at the top, you will find <a href="https://expressjs.com/en/api.html#express.json" class="external">a description of <code>express.json</code><span></span></a>. This does a similar job to <code>express.urlencode</code>, but it expects a <code>Content-Type</code> of <code>"application/json"</code>. All you have to do is to add a line to <code>server.js</code>:</p>
+<pre>
+<code class="language-javascript line-numbers"
+><i>require('dotenv').config()
+require('./database')
+const PORT = process.env.PORT || 3000
+const express = require('express')
+const app = express()
+
+
+app.use('/', express.static('public'))
+app.use(express.urlencoded())</i>
+app.use(express.json())
+
+
+<i>require('./routes/authorization')(app)
+
+
+app.get('/', (req, res) => {
+  const { protocol, hostname } = req
+  res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
+${Date()}&lt;/pre&gt;`)
+})
+
+
+app.listen(PORT, logStuffToConsole)
+
+// Some code omitted...</i></code></pre>
+<p>In your browser, reload the page <a href="http://localhost:5555/signup">localhost:5555/signup</a>, complete the form again, and press Register. This time, you should see the result of the <code>fetch</code> requests logged in the browser's console:</p>
+<img src="tutorial/images/created-by-json.png" alt="creating a user with fetch">
+
+<h4>Having It Both Ways</h4>
+<p>By using both Express methods...</p>
+<pre data-start="9">
+<code class="language-javascript line-numbers"
+>app.use(express.urlencoded())
+app.use(express.json())</code></pre>
+<p>... you can ensure that your server can handle data both from native HTML forms and from JavaScript commands like <code>fetch</code>.</p>
+<aside class="tip">
+  <p>When you encounter a problem, and then find the solution, you feel much stronger emotions than if you are shown a technique, and then given examples about how to use that technique.</p>
+  <p>Emotions help your brain to anchor memories. Your clearest memories are probably linked to your strongest emotions.</p>
+  <p>Error messages may look aggressive, but they are written by people who want to help. Initially, they wanted to help themselves as they were writing the open-source code that you are now using. You can enjoy the emotions that they provoke in you, and you can enjoy the calm that returns when you find the solution.</p>
+  <p>If everything were easy, you wouldn't have anything to learn. If programming were easy, anybody could be programmer. If anybody could be a programmer, the pay wouldn't be any good.</p>
+</aside>
 </section>
 
-<!-- <section
+<section
   id="validation"
   data-item="Validating Input"
 >
   <h2>8. Validating User Input with Middleware</h2>
-  <p>Create `middleware/validationSignup.js` to check whether:</p>
-  
+  <p>By now, I imagine that you will have many User records in your database, and many of them will be identical. However, you don't want two users to sign up with the same user name, or the same user to sign up twice with the same email address. And you also want to make sure that no rogue data gets into your database.</p>
+  <p>You need to validate any data that comes from an untrustworthy source. And you can't trust just any stranger who has access to the Internet.</p>
+
+  <h4>Middleware</h4>
+
+  <p>Create the file <code>middleware/validationSignup.js</code>. You'll use this to check whether:</p>
   <ul>  
     <li>The given username is a non-empty string</li>
     <li>The given username already exists</li>
@@ -1185,7 +1277,7 @@ const validateSignup = async (req, res, next) => {
   function proceed() {
     if (status) {
       // There was an error in the input values 
-      res.status(status).send(message)
+      res.status(status).send({ message })
 
     } else {
       // No error: time to create a new user
@@ -1196,16 +1288,30 @@ const validateSignup = async (req, res, next) => {
 
 
 module.exports = validateSignup</code></pre>
-
-<p>Create `middleware/index.js`:</p>
+<h4>One Source for All Controllers</h4>
+<p>Create a file called <code>middleware/index.js</code>.You'll use this to centralize access to the different middelware that you will create:</p>
 <pre>
 <code class="language-javascript line-numbers"
->const validateSignup = require('./validationSignup')
+>const validateSignup = require('./validateSignup')
 
 module.exports = {
   validateSignup
 }</code></pre>
-</section> -->
+
+<pre>
+<code class="language-javascript line-numbers"
+>const { validateSignup } = require('../middleware')
+<i>const { signUp } = require('../controllers')</i>
+
+
+<i>const routes = app => {
+  app.post('/signup',</i> validateSignup, <i>signUp)
+}
+
+
+module.exports = routes</i> 
+</code></pre>
+</section>
 
 <section id="intro">
 <h2>Introduction</h2>

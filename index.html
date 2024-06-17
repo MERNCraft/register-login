@@ -31,8 +31,8 @@
 >
 <h2>1. A Bare-bones Express Server</h2>
 <p>You can start by creating an empty directory called <code>backend</code>. In a Terminal window type the following commands:</p>
-<pre><code class="language-bash">mkdir backend && cd backend</code></pre>
-<aside class="vscode">
+<pre><code class="language-bash">mkdir backend &amp;&amp; cd backend</code></pre>
+<aside aria-label="aside00" class="vscode">
   <p>If you are working with VS Code, you can open the current folder in a VS Code window with the command:</p>
   <pre><code class="language-bash"
   >code -r .</code></pre>
@@ -50,7 +50,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
   },
   "keywords": [],
   "author": "",
@@ -80,15 +80,15 @@
 <pre name="anchor-install"><code class="language-bash">npm i bcryptjs cookie-session dotenv express jsonwebtoken mongoose</code>
 </pre>
 <p>This command will take some time to run, depending on your Internet connection speed. When it has finished, there will be a new directory named <code>node_modules</code> and a new file named <code>package-lock.json</code>. Your <code>package.json</code> file should look something this:</p>
-<img src="tutorial/images/node_modules.png" alt="package.json after running npm install">
-<aside>
+<img src="images/node_modules.png" alt="package.json after running npm install">
+<aside aria-label="aside01">
   <p>The version numbers may be different for you.</p>
 </aside>
 <p>The <code>package-lock.json</code> file contains a detailed list of every file that was downloaded into your <code>node_modules</code> directory. If you share this file with your collaborators, they will be able to download the exact same files into their own development environment, so you will all be working with exactly the same third-party code.</p>
 <p>Open the <code>node_modules</code> directory, to see all the files that it now contains. On my computer, it contains over 12 MB of code files, even before I've written a line of code for myself.</p>
 <h4>Writing Your Own Express Server</h4>
 <p>Create a file called `server.js` at the root of your project:</p>
-<pre name="anchor-hello" name="anchor-hello">
+<pre name="anchor-hello">
 <code class="language-javascript line-numbers"
 >/* server.js */
 
@@ -96,7 +96,7 @@ const express = require('express')
 const app = express()
 
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) =&gt; {
   res.send("Hello from Express")
 })
 
@@ -129,7 +129,7 @@ app.listen(3000)</code></pre>
 <p>If you open your browser and visit <a href="http://localhost:3000/">http://localhost:3000/</a>, you should see:</p>
 <blockquote><pre>Hello from Express</pre></blockquote>
 <p>This shows that your server is working.</p>
-<aside class="tip">
+<aside aria-label="aside02" class="tip">
   <p>"Test early, test often, test on all your target devices."</p>
   <p>This is a good mantra to follow. Take small steps, and make sure that everything is working the way you expect before continuing to the next step.</p>
 </aside>
@@ -158,7 +158,7 @@ const PORT = 3000
 const app = express()
 
 
-app.get('/', (req, res) => {</i>
+app.get('/', (req, res) =&gt; {</i>
   const { protocol, hostname } = req
   <i>res.send(</i>`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}&lt;/pre&gt;`<i>)
@@ -172,13 +172,13 @@ function logStuffToConsole() {
   const nets = require("os").networkInterfaces()
   const ips = Object.values(nets)
   .flat()
-  .filter(({ family }) => (
+  .filter(({ family }) =&gt; (
     family === "IPv4")
   )
-  .map(({ address }) => address)
+  .map(({ address }) =&gt; address)
   ips.unshift("localhost")
 
-  const hosts = ips.map( ip => (
+  const hosts = ips.map( ip =&gt; (
     `http://${ip}:${PORT}`)
   ).join("\n  ")
   console.log(`Express server listening at:
@@ -214,7 +214,7 @@ Express server listening at:
 <p>To install <code>nodemon</code> as a development dependency, run the following command in the terminal:</p>
 <pre><code class="language-bash"
 >npm i -D nodemon</code></pre>
-<aside>
+<aside aria-label="aside03">
   <p>The <code>-D</code> means <i>dev dependency</i>. This means that <code>nodemon</code> will not be included in the Node modules that are bundled for the production version of your server. The files on your production server should not be changing often, so it makes no sense to launch them with <code>nodemon</code>. Instead, in a production environment, you would use a <i>process manager</i> like <a href="https://pm2.keymetrics.io/" class="external">PM2<span></span></a>, which can restart your server if it ever crashes.</p>
 </aside>
 <p>You should see a new entry in your <code>package.json</code> file:</p>
@@ -236,17 +236,17 @@ Express server listening at:
 "main": "server.js",
 "scripts": {</i>
   "start": "nodemon server.js",
-  <i>"test": "echo \"Error: no test specified\" && exit 1"
+  <i>"test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
 },
 "keywords": ...</i>
 </code></pre>
-<p>From your terminal, stop the server by typing <code>Ctrl-C</code></code>, then tell <code>npm</code> to run the script that you have just added:</p>
+<p>From your terminal, stop the server by typing <code>Ctrl-C</code>, then tell <code>npm</code> to run the script that you have just added:</p>
 <pre><code class="language-bash"
 >npm start</code></pre>
 <p>You should see something like this in your Terminal:</p>
 <pre><code class="language-bash"
->> backend@1.0.0 start
-> nodemon server.js
+>&gt; backend@1.0.0 start
+&gt; nodemon server.js
 
 <u>[nodemon] 3.1.0
 [nodemon] to restart at any time, enter `rs`
@@ -269,7 +269,7 @@ Express server listening at:
 <pre><code>mongodb://localhost:27017/register</code></pre>
 <p>If you sign up with MongoDB Atlas, you should have a string that might look like this:</p>
 
-<pre><code>mongodb+srv://username:password@cluster0.mongodb.net/?retryWrites=true&w=majority</code></pre>
+<pre><code>mongodb+srv://username:password@cluster0.mongodb.net/?retryWrites=true&amp;w=majority</code></pre>
 <p>At the root of your project, create a <code>.env</code> file and give it the following text (but use your own connection string, not mine):</p>
 
 <pre><code class="language-env"
@@ -292,10 +292,10 @@ module.exports = db
 
 mongoose
   .connect(DB)
-  .then(() => {
+  .then(() =&gt; {
     console.log(`Connected to ${DB}`)
   })
-  .catch( error => {
+  .catch( error =&gt; {
     console.log("DB connection ERROR:\n", error);
     process.exit()
   })</code></pre>
@@ -330,7 +330,7 @@ Express server listening at:
 
 <u>Connected to mongodb://localhost:27017/register</u>
 </code></pre>
-<aside class="alert">
+<aside aria-label="aside04" class="alert">
   <p>If you see an error message, read it carefully. It may contain suggestions on how to fix the problem. Perhaps you will need to:</p>
   <ul>
     <li>Check that your MongoDB connection string is correct</li>
@@ -358,7 +358,7 @@ Express server listening at:
   "hash": "$2a$08$OVCBebqxKd14FLP0zDeaaONVq"
 }
 </code></pre>
-<aside class="tip">
+<aside aria-label="aside05" class="tip">
   <p>Notice that the user's password is not stored: only seemingly random string created by a one-way hash algorithm. This means that even if hackers break into your database, they can't retrieve any passwords. Visitors tend to use the same passwords on many different sites, so if an email-password pair is found on any hacked site, bad guys can often get access to the user's other accounts.</p>
 </aside>
 <p>To teach Mongoose that this is the structure you want to use for all User documents, create a new file at <code>database/models/user.js</code>:</p>
@@ -378,14 +378,14 @@ const User = model("User", schema)
 
 module.exports = User</code></pre>
 <p>This exports a Mongoose <i>model</i> that can be used by other scripts. You can read more about Mongoose models <a href="https://mongoosejs.com/docs/models.html" class="external">here<span></span></a>.</p>
-<aside class="question">
+<aside aria-label="aside06" class="question">
   <h3>Question: How can you test whether this User model can be used to create a new document in the MongoDB database?</h3>
   <p>You <i>could</i> write all the code necessary to make a sign-up request from a browser, and <i>only then</i> test that the User model is working. A better approach is to create a specific test right now, writing as little code as possible.</p>
 </aside>
 
 <h4>Giving the Database Access to the Model</h4>
 <p>Whether you are writing a test or writing code that will be used in the final server, you first need to connect your new model with the existing database code.</p>
-<p>Earlier, <button data-name="anchor-db">you created a <code>db</code> object in the script <code>database/index.js</code></button>. Edit this script now, to give it access to the <code>User</code> model that is exported by <code>database/user.js</code>. The <code>index.js</code> script can then re-export the <code>User</code> model. Other scripts can find all the database features in one place.</p>
+<p>Earlier, <button type="button" data-name="anchor-db">you created a <code>db</code> object in the script <code>database/index.js</code></button>. Edit this script now, to give it access to the <code>User</code> model that is exported by <code>database/user.js</code>. The <code>index.js</code> script can then re-export the <code>User</code> model. Other scripts can find all the database features in one place.</p>
 <pre>
 <code class="language-javascript line-numbers"
 >/* database/index.js */
@@ -397,11 +397,11 @@ const User = require('./models/user')
 
 <i>mongoose
   .connect(DB)
-  .then(() => {
+  .then(() =&gt; {
     console.log(`Connected to ${DB}`)</i>
     <u>// Temporary code to test the User model will go here</u>
   <i>})
-  .catch( error => {
+  .catch( error =&gt; {
     console.log("DB connection ERROR:\n", error);
     process.exit()
   })
@@ -412,7 +412,7 @@ const db = {
 }
 
 module.exports = db</i></code></pre>
-<aside>
+<aside aria-label="aside07">
   <h3>The Model-View-Controller Pattern</h3>
   <p>Your application needs to do three main things:</p>
   <ol>
@@ -444,8 +444,7 @@ module.exports = db</i></code></pre>
   <p>Your end-users will use their browsers to View the data that is meaningful for them. For example, they will use a form on a web page to enter their connection details and to enjoy the content that you provide.</p>
   <p>There's just one problem: you haven't started writing any code for this yet. You'll need a temporary stop-gap solution. As you'll soon see, you can create some dummy form data and print the content that it generates in the console. </p>
   <p>Now it's time to create the first Controller: a script that allows you to convert a user's input into a User document.</p>
-  </ul>
-<h4>Using the Model</h4></p>
+<h4>Using the Model</h4>
 
 <p>Create <code>controllers/signup.js</code>, and give it the following script:</p>
 <pre name="anchor-signup">
@@ -500,15 +499,15 @@ module.exports = signUp</code></pre>
 <code class="language-javascript line-numbers"
 >function signUp(req, res) {
   const { username, email, password } = req.body</code></pre>
-<p><button data-name="anchor-res-req">As you saw earlier</button>, when the server receives a request from a client, the Express app calls a function that has two parameters, which are conventionally called <code>req</code> and <code>res</code> (request and response). That's why the <code>signUp</code> function has these two parameters. In its current version, it only uses the <code>req</code> argument, but you'll be <button data-name="anchor-use-res">editing this function to use <code>res</code></button> later.</p>
+<p><button type="button" data-name="anchor-res-req">As you saw earlier</button>, when the server receives a request from a client, the Express app calls a function that has two parameters, which are conventionally called <code>req</code> and <code>res</code> (request and response). That's why the <code>signUp</code> function has these two parameters. In its current version, it only uses the <code>req</code> argument, but you'll be <button type="button" data-name="anchor-use-res">editing this function to use <code>res</code></button> later.</p>
 
-<p name="anchor-body">Express can add read the data sent from the browser and store in a <code>body</code> object. (You'll see <button data-name="anchor-set-body">how to do that</button> soon). For now, you can assume that:</p>
+<p name="anchor-body">Express can add read the data sent from the browser and store in a <code>body</code> object. (You'll see <button type="button" data-name="anchor-set-body">how to do that</button> soon). For now, you can assume that:</p>
 <ul>
   <li>The <code>req</code> object contains a <code>body</code> object</li>
   <li>The <code>req.body</code> object will have three key/value pairs: <code>username</code>, <code>email</code> and <code>password</code></li>
   <li>All these values will be strings.</li>
 </ul>
-<p>(You'll see <button data-name="anchor-validate">how to check that this is true</button> shortly.)</p>
+<p>(You'll see <button type="button" data-name="anchor-validate">how to check that this is true</button> shortly.)</p>
 
 <h4>Hashing the Password</h4>
 <pre data-start="10">
@@ -582,10 +581,10 @@ ${error}`
 <h4>Sending a Response</h4>
 <pre data-start="38">
 <code class="language-javascript line-numbers"
->function proceed () => {
+>function proceed () =&gt; {
   res.send(message )
 }</code></pre>
-<p>You've used <code>res.send()</code> twice before. Once to <button data-name="anchor-hello">send a simple "Hello from Express" message</button>, and once to <button data-name="anchor-server">send information about the server</button>. In just a moment, you will <button data-name="anchor-mock">write a mock <code>res</code> object</button> that will divert the <code>send</code> function to serve a different purpose.</p>
+<p>You've used <code>res.send()</code> twice before. Once to <button type="button" data-name="anchor-hello">send a simple "Hello from Express" message</button>, and once to <button type="button" data-name="anchor-server">send information about the server</button>. In just a moment, you will <button type="button" data-name="anchor-mock">write a mock <code>res</code> object</button> that will divert the <code>send</code> function to serve a different purpose.</p>
 
 <h4>One Source for All Controllers</h4>
 <p>You only have one controller for now, so the next step may seem unnecessary. It just makes sure that everything will be neat and tidy now and in the future.</p>
@@ -610,7 +609,7 @@ const {
   signUp
 } = require('../controllers')
 
-const addUser = () => {
+const addUser = () =&gt; {
   const req = {
     body: {
       username: "to_be_deleted",
@@ -629,17 +628,15 @@ const addUser = () => {
 
 module.exports = addUser</code></pre>
 <p>Notice how this script can read in the <code>signUp</code> function directly from the <code>index.js</code> script in the <code>controlers</code> directory, rather than explicitly from <code>../controllers/signup.js</code>. That is thanks to the previous step.</p>
-<p>This script exports a function named <code>addUser</code>. This creates two simple objects to mimic the key functionality of the <code>req</code> and <code>res</code> objects that you saw earlier.
+<p>This script exports a function named <code>addUser</code>. This creates two simple objects to mimic the key functionality of the <code>req</code> and <code>res</code> objects that you saw earlier.</p>
 
 <ul>
   <li>The <code>req</code> object contains a <code>body</code> object which contains some fake login data in the format that the <code>signUp()</code> function expects.</li>
   <li>The <code>res</code> object contains a <code>send()</code> function, which simply logs a message to the console in the Terminal.</li>
 </ul>
 
-  </p>
-
 <h4>Adding a User, as a Proof-of-Concept</h4>
-<p>The last step in this process is to call this <code>addUser</code> function as soon as the connection with the MongoDB database is ready. To do this, you need to make a small change to <code>database/index.js</code>, to read in the <code>addUser</code> function and call it:
+<p>The last step in this process is to call this <code>addUser</code> function as soon as the connection with the MongoDB database is ready. To do this, you need to make a small change to <code>database/index.js</code>, to read in the <code>addUser</code> function and call it:</p>
 <pre>
 <code class="language-javascript line-numbers"
 >/* database/index.js */
@@ -651,12 +648,12 @@ const User = require('./models/user')
 
 mongoose
   .connect(DB)
-  .then(() => {
+  .then(() =&gt; {
     console.log(`Connected to ${DB}`)</i>
     <s>// Temporary code to test the User model</s>
     require('../test/addUser')()
   <i>})
-  .catch( error => {
+  .catch( error =&gt; {
     console.log("DB connection ERROR:\n", error);
     process.exit()
   })
@@ -690,7 +687,7 @@ Connected to mongodb://localhost:27017/register
   }
 }</code></pre>
 <p>If so, well done! You've already made good progress.</p>
-<aside class="question">
+<aside aria-label="aside08" class="question">
   <h3>Question: When you follow a tutorial, step by step, how can you be sure that you are actually learning anything?</h3>
   <p>One excellent way to learn is to teach someone else. If you do not fully understand what you are doing, and why you are doing it, you will discover the gaps in your knowledge when you try to share it.</p>
   <p>And why not be your own student?</p>
@@ -710,13 +707,13 @@ Connected to mongodb://localhost:27017/register
   <h4>Running <code>mongosh</code> with MongoDB Community Edition</h4>
   <p></p>
   <p>If you <a href="https://www.mongodb.com/docs/manual/administration/install-community/" class="external">installed MongoDB Community Edition<span></span></a> on your development computer, you will already have a program called <code>mongosh</code> installed.</p>
-  <aside>
-    <p>If you are using MongoDB Atlas, <button data-name="anchor-compass">skip ahead</button> to see how to use <code>mongosh</code> with the Compass app.</p>
+  <aside aria-label="aside09">
+    <p>If you are using MongoDB Atlas, <button type="button" data-name="anchor-compass">skip ahead</button> to see how to use <code>mongosh</code> with the Compass app.</p>
   </aside>
   <p>You can open a new Terminal window and type the command...</p>
   <pre><code class="language-bash"
   >mongosh</code></pre>
-  <p>This will launch the program. You can now use the following commands:
+  <p>This will launch the program. You can now use the following commands:</p>
   <table name="anchor-mongosh">
     <tbody>
       <tr>
@@ -733,7 +730,6 @@ Connected to mongodb://localhost:27017/register
       </tr>
     </tbody>
   </table>
-    </p>
   <pre><code class="language-bash"
   >backend % <b>mongosh</b>
 Current Mongosh Log ID: 65f9586563497cd18faa85f2
@@ -743,9 +739,9 @@ For mongosh info see: https://docs.mongodb.com/mongodb-shell/
 
 ------
 
-test> <b>use register</b>
+test&gt; <b>use register</b>
 switched to db register
-register> <b>db.users.find()</b>
+register&gt; <b>db.users.find()</b>
 [
   {
     _id: ObjectId('65f15604a91eca4f9dacab5b'),
@@ -763,26 +759,26 @@ register> <b>db.users.find()</b>
     __v: 0
   }
 ]
-register> <b>db.users.drop()</b>
+register&gt; <b>db.users.drop()</b>
 <u>true</u>
-register> <b>db.users.find()</b>
+register&gt; <b>db.users.find()</b>
 
-register></code></pre>
+register&gt;</code></pre>
 <h4 name="anchor-compass">Using <code>mongosh</code> with Compass</h4>
 <p>If you are working with <a href="https://www.mongodb.com/atlas/database" class="external">MongoDB Atlas<span></span></a>, you can download <a href="https://www.mongodb.com/products/tools/compass" class="external">Compass<span></span></a>, the free GUI tool for interacting with your Atlas.</p>
 <ol>
-  <li>Choose the menu item Connect > New Connection</li>
+  <li>Choose the menu item Connect &gt; New Connection</li>
   <li>In the URI field, enter in the same link that you used as the value for <code>DB</code> in the <code>.env</code> file</li>
   <li>Click Connect</li>
 </ol>
 
-<img src="tutorial/images/new_connection.png">
+<img src="images/new_connection.png" alt="">
 <ol start="4">
-  <li>Along the very bottom of the window, you will see a narrow field with the title >_MONGOSH. Click on the resize bar at the top of the title and pull it upwards, so that there is plenty of space to work in.</li>
+  <li>Along the very bottom of the window, you will see a narrow field with the title &gt;_MONGOSH. Click on the resize bar at the top of the title and pull it upwards, so that there is plenty of space to work in.</li>
 </ol>
-<img src="tutorial/images/mongosh.png">
+<img src="images/mongosh.png" alt="">
 <ol start="5">
-  <li>Use the same commands as <button data-name="anchor-mongosh">detailed above</button>:<br>
+  <li>Use the same commands as <button type="button" data-name="anchor-mongosh">detailed above</button>:<br>
   <ul>
     <li><code>use register</code></li>
     <li><code>db.users.find()</code></li>
@@ -790,10 +786,10 @@ register></code></pre>
   </ul>
 </li>
 </ol>
-<img src="tutorial/images/compass.png">
+<img src="images/compass.png" alt="">
 <p>You can learn more about <code>mongosh</code> in <a href="https://www.mongodb.com/docs/mongodb-shell/" class="external">the official MongoDB documentation<span></span></a>.</p>
 
-<aside class="tip">
+<aside aria-label="aside10" class="tip" alt="">
   <p>You have tested that <code>signUp()</code> works with one set of arguments. Soon, you will be running another test. You want to be sure that the sign-up process fails elegantly when the arguments are invalid, for any reason.</p>
   <p>In the meantime, you don't need to create new User documents each time <code>nodemon</code> restarts the server, so you can comment out the line in <code>controllers/signup.js</code> that creates a new user.</p>
   <pre data-start="10">
@@ -814,7 +810,7 @@ register></code></pre>
 <p>Because the code that you are about to use will later be thrown away, I'm not going explain how it works. I'm going to assume that you have already written HTML forms and used the Fetch API to communicate with a remote server (or that you are not interested in doing this at all.</p>
 <p>So I'll just give you the code.</p>
 <h4>Sign-up Form</h4>
-<p>Create a file at <code>public/sign/up/index.html</code>, with the code shown below. (<button data-name="anchor-static">The reason for placing the <code>index.html</code> file in nested directories like this will become clear shortly.</button>)</p>
+<p>Create a file at <code>public/sign/up/index.html</code>, with the code shown below. (<button type="button" data-name="anchor-static">The reason for placing the <code>index.html</code> file in nested directories like this will become clear shortly.</button>)</p>
 <pre>
 <code class="language-html line-numbers"
 >&lt;!-- public/sign/up/index.html --&gt;
@@ -904,7 +900,7 @@ register></code></pre>
   &lt;/form&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<aside class="question">
+<aside aria-label="aside11" class="question">
   <h3>Did You Notice...?</h3>
   <ol>
   <li>On form attributes are <pre><code>  method="post"
@@ -914,10 +910,10 @@ register></code></pre>
   </ol>
 </aside>
 <p>If you open this file in your browser from your desktop, by double-clicking on it, it should look something like this:</p>
-<img src="tutorial/images/signup.png" alt="sign-up form">
+<img src="images/signup.png" alt="sign-up form">
 <h4>Serving the <code>/sign/up/index.html</code> Page</h4>
 <p>So far so good. But if you try to connect to this new <code>index.html</code> page through your server, your attempt will fail. Try it. Try visiting <a href="http://localhost:5555/sign/up">localhost:5555/sign/up</a>. You will see a 404 Not Found error.</p>
-<img src="tutorial/images/cannot_get.png" alt="image_name">
+<img src="images/cannot_get.png" alt="image_name">
 <p>How is your browser going to get the web page with the sign-up form from the server?</p>
 <p name="anchor-static">Express allows you to choose a directory from which to serve <a href="https://expressjs.com/en/starter/static-files.html" class="external">static pages<span></span></a> for a specific directory. By convention, this directory is often called <code>public/</code>. (Remember where you saved the HTML file that you have just created?)</p>
 <p>When the Express server receives a request for (say) <code>/this/particular/path</code>, Express will check if there is an <code>index.html</code> file in the directory <code>public/this/particular/path</code>, and if so, it will send that <code>index.html</code> file back to the browser.</p>
@@ -938,7 +934,7 @@ const app = express()</i>
 app.use(express.static('public'))
 
 
-<i>app.get('/', (req, res) => {
+<i>app.get('/', (req, res) =&gt; {
   const { protocol, hostname } = req
   res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}&lt;/pre&gt;`)
@@ -951,16 +947,16 @@ app.listen(PORT, logStuffToConsole)
 <p>Now, if you visit <a href="http://localhost:5555/sign/up">localhost:5555/sign/up</a> in your browser, your server will find the file that you created at <code>public/sign/up/index.html</code> and send that back to the browser.</p>
 <p>Try it and see. Bingo! The sign-up form appears.</p>
 
-<img src="tutorial/images/sign-up.png" alt="serving the /sign/up page">
+<img src="images/sign-up.png" alt="serving the /sign/up page">
 
 <h4>A Step Too Far</h4>
 <p>Actually, go ahead and fill in the form with valid data, and press the Register button.</p>
 <p>In your browser, you will see an error: 404 Not Found. Again. But this time it is a request for <code>POST /signup</code> which generates this error.</p>
-<img src="tutorial/images/cannot_post.png" alt="404 Not Found">
+<img src="images/cannot_post.png" alt="404 Not Found">
 <p>Can you imagine why that happened? </p>
 <h4>Create a Route to Treat the <code>/signup</code> Request</h4>
 <p>The solution is simple. You haven't yet told the Express server what to do with a <code>POST</code> request for <code>/signup</code>. Now it's time to do that.</p>
-<aside>
+<aside aria-label="aside12">
   <p>Earlier, you created a route for <code>'/'</code> in <code>server.js</code>, simply to test if your server was running. Now you need to create another route for requests to <code>/signup</code>. It's good practice to keep <code>server.js</code> (and indeed, every script) as simple as possible, so I recommend that you:</p>
   <ul>
     <li>Create a separate directory called <code>routes</code></li>
@@ -975,18 +971,18 @@ app.listen(PORT, logStuffToConsole)
 
 const { signUp } = require('../controllers')
 
-const routes = app => {
+const routes = app =&gt; {
   app.post('/signup', signUp)
 }
 
 module.exports = routes</code></pre>
-<p>All this does is to tell your server <code>app</code> to call <button data-name="anchor-signup">the <code>signUp</code> function</button> that you created earlier when a <code>POST</code> request is made to <code>/signup</code>... which is exactly what happens when you submit the form.</p>
+<p>All this does is to tell your server <code>app</code> to call <button type="button" data-name="anchor-signup">the <code>signUp</code> function</button> that you created earlier when a <code>POST</code> request is made to <code>/signup</code>... which is exactly what happens when you submit the form.</p>
 <p>The <code>signUp()</code> function will now receive two arguments: both <code>req</code> and <code>res</code>. </p>
 <p>Now you have to add a line to <code>server.js</code>, so that it is able to use this new script.</p>
 <pre>
   <code class="language-javascript line-numbers"
   >/* server.js */
-  
+
   <i>require('dotenv').config()
   require('./database')
   const PORT = process.env.PORT || 3000
@@ -1000,14 +996,14 @@ module.exports = routes</code></pre>
   require('./routes/authorization')(app)
 
 
-  <i>app.get('/', (req, res) => {
+  <i>app.get('/', (req, res) =&gt; {
     const { protocol, hostname } = req
     res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
   ${Date()}&lt;/pre&gt;`)
   })
 
 
-  app.listen(PORT, logStuffToConsole)</i>
+  app.listen(PORT, logStuffToConsole)
 
   // Some code omitted for clarity...</i></code></pre>
 
@@ -1015,7 +1011,7 @@ module.exports = routes</code></pre>
 <p>You can go back to your browser and try again.</p>
 <p>Oops!</p>
 
-<img src="tutorial/images/internal_error.png" alt="internal server error">
+<img src="images/internal_error.png" alt="internal server error">
 
 
 <h4>Internal Server Error!</h4>
@@ -1031,17 +1027,17 @@ module.exports = routes</code></pre>
 >function signUp(req, res) {
   const { username, email, password } = <b>req.body</b>
 </code></pre>
-<p>The error message <i>doesn't</i> say that <code>req</code> is undefined, so that's good news. But why does <code>req</code> not have a <code>body</code> field? When <button data-name="anchor-body">you wrote the <code>signUp</code> function</button>, I led you to assume that...</p>
+<p>The error message <i>doesn't</i> say that <code>req</code> is undefined, so that's good news. But why does <code>req</code> not have a <code>body</code> field? When <button type="button" data-name="anchor-body">you wrote the <code>signUp</code> function</button>, I led you to assume that...</p>
 <blockquote>Express can add read the data sent from the browser and ... [the] req object contains a body object.</blockquote>
 <p>Why didn't Express do that?</p>
 <p>The short answer is: Because you haven't yet told Express <i>how</i> to read the data that was posted by the form.</p>
-<aside>
+<aside aria-label="aside13">
   <p>The long answer is that you can send many different kinds of data in a <code>POST</code> request. You could send a text message, a stringified JSON object, an image, an audio file, ... But all that the server sees is a series of <code>0</code>s and <code>1</code>s. When <i>you</i> look at a text or an image, you know what you are looking at. When the server looks at a series of <code>0</code>s and <code>1</code>s, it needs a hint.</p>
   <h4>Sphagett<code>0</code> Code?</h4>
   <p>Not only that, but the series of <code>0</code>s and <code>1</code>s can be very long. It could be a live-streaming video, for example. It's not a complete thing, it's more like a spaghetto: a strand of spaghetti that the server sucks in from one end until it reaches the end of the data. And like a spagetto, it could break, and the pieces may be sucked in in the wrong order.</p>
   <p>Express will store the pieces as they come in, in a <a href="https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream" class="external">ReadableStream<span></span></a> object. And you have to tell Express what to do with that <code>ReadableStream</code>.</p>
   <p>In this case, because the data was sent by a form, it was sent with a <code>Content-Type</code> of <code>application/x-www-form-urlencoded</code>. You can see this in your browser's Developer Tools, at the Network tab:</p>
-  <img src="tutorial/images/content-type.png" alt="content-type">
+  <img src="images/content-type.png" alt="content-type">
   <p>An Internet search for "Express urlencoded" will bring up links like <a href="https://expressjs.com/en/api.html#express.urlencoded" class="external">the official Express methods documentation<span></span></a> and <a href="https://www.tutorialspoint.com/express-js-express-urlencoded-method" class="external">tutorials with examples<span></span></a>.</p>
 </aside>
 <p name="anchor-set-body">To solve the problem, you need to add a line to <code>server.js</code>, to tell Express explicitly to look for form data in the request, and to create an object named <code>body</code> that contains the data</p>
@@ -1063,7 +1059,7 @@ app.use(express.urlencoded())
 require('./routes/authorization')(app)
 
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) =&gt; {
   const { protocol, hostname } = req
   res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}&lt;/pre&gt;`)
@@ -1073,9 +1069,8 @@ ${Date()}&lt;/pre&gt;`)
 app.listen(PORT, logStuffToConsole)
 
 // Some code omitted for clarity...</i></code></pre>
-</code></pre>
 <p>Save your changes and try filling the form in again. This time the content of the <code>/signup</code> page should load correctly, </p>
-<img src="tutorial/images/record_created.png" alt="record created">
+<img src="images/record_created.png" alt="record created">
 </section>
 
 <section
@@ -1128,7 +1123,7 @@ app.listen(PORT, logStuffToConsole)
 
 <i>&lt;/body&gt;
 &lt;/html&gt;</i></code></pre>
-<aside class="question">
+<aside aria-label="aside14" class="question">
   <h3>How is this different from a basic HTML form?</h3>
   <p>The script reads in the <code>method</code> and the <code>action</code> of the form, and creates a <code>headers</code> object to tell the server that this time, the <code>Content-Type</code> of the data will be <code>"application/json"</code>.</p>
   <blockquote>
@@ -1149,7 +1144,7 @@ app.listen(PORT, logStuffToConsole)
 </aside>
 <h4>Making a JSON-based Request</h4>
 <p>In your browser, visit the page <a href="http://localhost:5555/signup">localhost:5555/signup</a> again, fill in the form and press Register. And again you get an error. What is it this time?</p>
-<img src="tutorial/images/syntax_error.png" alt="Internal Server Error">
+<img src="images/syntax_error.png" alt="Internal Server Error">
 <p>If you read <a href="https://expressjs.com/en/api.html#express.urlencoded" class="external">the official Express documentation<span></span></a> for <code>express.urlencoded</code> carefully, you will have seen that it:</p>
 <blockquote>
   only parses <b>urlencoded</b> bodies and only looks at requests where the Content-Type header matches ...<b>"application/x-www-form-urlencoded"</b>
@@ -1180,7 +1175,7 @@ app.use(express.static('public'))
 require('./routes/authorization')(app)
 
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) =&gt; {
   const { protocol, hostname } = req
   res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}&lt;/pre&gt;`)
@@ -1191,7 +1186,7 @@ app.listen(PORT, logStuffToConsole)
 
 // Some code omitted for clarity...</i></code></pre>
 <p>In your browser, reload the page <a href="http://localhost:5555/signup">localhost:5555/signup</a>, complete the form again, and press Register. This time, you should see the result of the <code>fetch</code> requests logged in the browser's console:</p>
-<img src="tutorial/images/created-by-json.png" alt="creating a user with fetch">
+<img src="images/created-by-json.png" alt="creating a user with fetch">
 
 <h4>Having It Both Ways</h4>
 <p>By using both Express methods...</p>
@@ -1200,7 +1195,7 @@ app.listen(PORT, logStuffToConsole)
 >app.use(express.json())
 app.use(express.urlencoded())</code></pre>
 <p>... you can ensure that your server can handle data both from native HTML forms and from JavaScript commands like <code>fetch</code>.</p>
-<aside class="tip">
+<aside aria-label="aside15" class="tip">
   <p>When you encounter a problem, and then find the solution, you feel much stronger emotions than if you are shown a technique, and then given examples about how to use that technique.</p>
   <p>Emotions help your brain to anchor memories. Your clearest memories are probably linked to your strongest emotions.</p>
   <p>Error messages may look aggressive, but they are written by people who want to help. Initially, they wanted to help themselves as they were writing the open-source code that you are now using. You can enjoy the emotions that they provoke in you, and you can enjoy the calm that returns when you find the solution.</p>
@@ -1218,30 +1213,32 @@ app.use(express.urlencoded())</code></pre>
 
 <h4>Understanding the Problem</h4>
 <p>You have created a placeholder frontend form that asks a user for a username, and email address and a password. The browser checks for you that the user's input is valid before it enables the Register button. The JavaScript code in your HTML page converts this validated input to JSON format before making a request to your server.</p>
-<p>This ensures that a <code>POST</code> request to <a href="http://localhost:5555/signup"></a> will contain a JSON string with the appropriate key-value pairs.</p>
+<p>This ensures that a <code>POST</code> request to <a href="http://localhost:5555/signup">http://localhost:5555/signup</a> will contain a JSON string with the appropriate key-value pairs.</p>
 <p>But is this the only way that someone can <code>POST</code> a request to this endpoint?</p>
 <h4>Using an API Testing App</h4>
 <p>Instead of using your placeholder frontend form, you could use an API testing app to make requests. Below, I show how to use Thunder Client, an extension for VS Code, but you may prefer to use a <a href="https://requestly.com/blog/comparing-the-best-api-clients/" class="external">more powerful alternative<span></span></a>. The requests you will be making will be the same as in my description below.</p>
-<aside class="vscode">
+<aside aria-label="aside16" class="vscode">
   <ol>
-    <li>In VS Code, do one of the following...<ul>
+    <li>In VS Code, do one of the following...
+      <ul>
         <li>Click on the Extensions Icon in the Activity Bar</li>
-        <li>Select View > Extensions in the Menu bar</li>
+        <li>Select View &gt; Extensions in the Menu bar</li>
         <li>Use the keyboard shortcut Ctrl-Shift-X</li>
       </ul>
-  <p>... to open the Extensions pane.</p></li>
-  <li>Start typing "Thunder Client" (without the quote marks) in the Search field at the top of the column</li>
-  <li>Select entry for the Thunder Client and click on Install</li>
-  <img src="tutorial/images/thunder-client.png" alt="installing Thunder Client">
-  <p>A new icon for Thunder Client should appear in the Activity Bar</p>
-  <ol>
+      <p>... to open the Extensions pane.</p>
+    </li>
+    <li>Start typing "Thunder Client" (without the quote marks) in the Search field at the top of the column</li>
+    <li>Select entry for the Thunder Client and click on Install<br>
+      <img src="images/thunder-client.png" alt="installing Thunder Client">
+      <p>A new icon for Thunder Client should appear in the Activity Bar</p>
+    </li>
     <li>Click in this icon</li>
     <li>Click on New Request</li>
     <li>Choose POST in the contextual Methods menu</li>
     <li>Enter <code>http://localhost:5555/signup</code> in the Url field</li>
     <li>Press Send</li>
   </ol>
-  <img src="tutorial/images/no_json.png" alt="sending a POST request with no JSON">
+  <img src="images/no_json.png" alt="sending a POST request with no JSON">
 
   <p>Congratulations! You just caused an Internal Server Error! Look in the Terminal for information about what happened:</p>
   <pre><code class="language-bash"
@@ -1250,10 +1247,10 @@ app.use(express.urlencoded())</code></pre>
 
   <p>What's more: Thunder Client received the same crash data. <u>It should not be this easy for a malicious actor to learn about your directory structure and the Node Modules that you are using.</u></p>
   <p>The good news is that your server has not crashed. If you create a request for <code>GET http://localhost:5555/</code>...</p>
-  <img src="tutorial/images/get_request.png" alt="GET request">
+  <img src="images/get_request.png" alt="GET request">
   <p>... your server should reply as usual.</p>
 </aside>
-<aside class="warn">
+<aside aria-label="aside17" class="warn">
   <p>This tutorial is not designed to teach you how to protect your server from all common malicious attacks. The validation technique that you will learn here will simply ensure that attackers (or your frontend development team) cannot force an error through the <code>signup</code> route.</p>
 </aside>
 </section>
@@ -1267,23 +1264,23 @@ app.use(express.urlencoded())</code></pre>
   <table>
     <tbody>
       <tr>
-        <th>database</th>
+        <th scope="row">database</th>
         <td>contains scripts that define the interface for the database (the Model)</td>
       </tr>
       <tr>
-        <th>controllers</th>
+        <th scope="row">controllers</th>
         <td>contains scripts that power the Controller; they provide the logic for updating the Model (database) and generating a response for the end user (View)</td>
       </tr>
       <tr class="temp">
-        <th>test</th>
+        <th scope="row">test</th>
         <td>contains a temporary script that tests that the  Model and Controller scripts work as expect</td>
       </tr>
       <tr>
-        <th>public</th>
+        <th scope="row">public</th>
         <td>contains a script that provides a View that allows the end user to interact with the Model</td>
       </tr>
       <tr>
-        <th>routes</th>
+        <th scope="row">routes</th>
         <td>contains a script that connects each specific API endpoint to the controller that generates a response</td>
       </tr>
     </tbody>
@@ -1303,7 +1300,7 @@ app.use(express.static('public'))</code></pre>
 
   <h4>Writing Your Own Middleware Scripts</h4>
   <p>The image below shows all the files and folders that you gave created so far, plus a folder and two files that you are just about to create.</p>
-  <img src="tutorial/images/structure.png" alt="file structure">
+  <img src="images/structure.png" alt="file structure">
   <p>The middleware script that you are about to write will check the <code>signUp</code> request, to see whether all these criteria are true:</p>
   <ul name="anchor-criteria">
     <li><code>req.body</code> is an object</li>
@@ -1323,7 +1320,7 @@ const { validateSignup } = require('../middleware')
 <i>const { signUp } = require('../controllers')
 
 
-  const routes = app => {
+  const routes = app =&gt; {
     app.post('/signup', </i>validateSignup, <i>signUp)
 }
 
@@ -1337,14 +1334,14 @@ module.exports = routes</i></code></pre>
 
 const { User } = require('../database')
 
-const validateSignup = async (req, res, next) => {
+const validateSignup = async (req, res, next) =&gt; {
   next()
 }
 
 module.exports = validateSignup
 </code></pre>
 <p>You might notice that this contains no validation at all. It simply calls <code>next()</code> immediately, without making any checks on what the request actually is.</p>
-<p>You'll be adding functions to perform the validation shortly. Specifically, you will be making sure that <code>next()</code> is only called if all <button data-name="anchor-criteria">the criteria listed above</button> are true.</p>
+<p>You'll be adding functions to perform the validation shortly. Specifically, you will be making sure that <code>next()</code> is only called if all <button type="button" data-name="anchor-criteria">the criteria listed above</button> are true.</p>
 <p>You'll need to make one more step before the <code>routes/authorization.js</code> script can access <code>validateSignup</code> from <code>'../middleware'</code>, rather than from a specific file. Add a file at <code>middleware/index.js</code> with the following script:</p>
 <pre>
 <code class="language-javascript line-numbers"
@@ -1357,7 +1354,7 @@ module.exports = {
 }</code></pre>
 <p>Any request for a file from the <code>middleware</code> folder itself will consult this <code>index.js</code> script in order to find it. Later, you will be adding other scripts to the <code>middleware</code> folder, and you'll be adding links to them through this <code>middleware/index.js</code> script, to keep everything tidy.</p>
 <h4>Exercise for the Reader</h4>
-<aside class="tip">
+<aside aria-label="aside18" class="tip">
   <p>You learn better when you tackle a problem for yourself <i>before</i> you discover the solution. So I'm going to ask you to write your own code for the <code>validateSignup()</code> function before I give you one possible solution. But I only succeed when you succeed, so I will give you a series of tests that your code must pass, and I will show you how to get started.</p>
 </aside>
 <p>Reinstate the line in <code>database/index.js</code> that calls the <code>addUser</code> test...</p>
@@ -1372,12 +1369,12 @@ const User = require('./models/user')
 
 mongoose
   .connect(DB)
-  .then(() => {
+  .then(() =&gt; {
     console.log(`Connected to ${DB}`)
     // Temporary code to test the User model</i>
     require('../test/addUser')()<i>
   })
-  .catch( error => {
+  .catch( error =&gt; {
     console.log("DB connection ERROR:\n", error);
     process.exit()
   })
@@ -1407,12 +1404,12 @@ const { validateSignup } = require('../middleware')
 const { signUp } = require('../controllers')
 
 
-const addUser = async (req) => {
+const addUser = async (req) =&gt; {
  // Return a promise so that the calling function addUsers()
  // can `await` its fulfilment
  return new Promise(simulateValidation)
    .then(treatResolution)
-   .catch(({ message }) => treatRejection(req, message))
+   .catch(({ message }) =&gt; treatRejection(req, message))
 
  function simulateValidation ( resolve, reject ) {
    // Create a mock res function which will call `resolve` if
@@ -1431,7 +1428,7 @@ const addUser = async (req) => {
      // send calls reject for any message which does not include
      // "User record created". Such messages are only created
      // by a successful call to new User() in signUp()
-     send: (message) => {
+     send: (message) =&gt; {
        if ( /"User record created"/.test(message) ) {
          console.log("result from signUp:", message);
          resolve(req)
@@ -1446,7 +1443,7 @@ const addUser = async (req) => {
    // validation succeeds, so signUp() will not be called if
    // validation fails.
 
-   const next = () => {
+   const next = () =&gt; {
      console.log(`
 req.body validated:
 ${JSON.stringify(req.body, null, '  ')}
@@ -1487,7 +1484,7 @@ req: ${JSON.stringify(req, null, "  ")}` // should never happen
 // Create a username and password which is unlikely to exist in
 // the User collection
 const randomName = "user_" +
- "random".replace(/./g, c => Math.floor(Math.random() * 10))
+ "random".replace(/./g, c =&gt; Math.floor(Math.random() * 10))
 const randomEmail = randomName + "@example.com"
 
 
@@ -1610,7 +1607,7 @@ async function addUsers(){
 
 module.exports = addUsers</code></pre>
 <p>Yes, that's a lot of code. I have commented it quite comprehensively, so you should be able to work out what it does.</p>
-<p>In short: it creates <button data-name="anchor-requests">an array of <code>req</code> objects</button>, and simulates the validation of each one. The first request should be successfully validated; the <code>validateSignup()</code> function should call <code>next()</code> for this request only.</p>
+<p>In short: it creates <button type="button" data-name="anchor-requests">an array of <code>req</code> objects</button>, and simulates the validation of each one. The first request should be successfully validated; the <code>validateSignup()</code> function should call <code>next()</code> for this request only.</p>
 <h4>Solving the Case of the Missing Body</h4>
 <p>All the other requests should fail. For instance, the second request...</p>
 <pre data-start="115">
@@ -1655,7 +1652,7 @@ as it is undefined.
 
 <i>const { User } = require('../database')
 
-const validateSignup = async (req, res, next) => {</i>
+const validateSignup = async (req, res, next) =&gt; {</i>
   if (typeof req.body !== "object") {
     return res.status(400).send("ERROR: No body")
   }
@@ -1704,7 +1701,7 @@ result from signUp: {
 const { User } = require('../database')
 
 
-const validateSignup = async (req, res, next) => {
+const validateSignup = async (req, res, next) =&gt; {
   let status = 0
   let message = ""
 
@@ -1783,7 +1780,7 @@ let message = ""</code></pre>
   message = "ERROR: No body"
   return proceed()
 }</code></pre>
-<p>Because <code>status</code> was set to <code>400</code>, <code>next()</code> is not called.
+<p>Because <code>status</code> was set to <code>400</code>, <code>next()</code> is not called.</p>
 <h4>Naming The Body</h4>
 <p>In <code>test/addUser.js</code>, the third request in the array of <code>req</code> objects has a perfectly valid <code>body</code>.</p>
 <pre data-start="119">
@@ -1855,7 +1852,7 @@ let message = ""</code></pre>
 const { User } = require('../database')
 
 
-const validateSignup = async (req, res, next) => {
+const validateSignup = async (req, res, next) =&gt; {
   // If status and message remain falsy, username, email and
   // roles are all valid; next() will be called. If not,
   // res.status(status).send({ message }) will be called.
@@ -1899,7 +1896,7 @@ const validateSignup = async (req, res, next) => {
   } else if (
       !email
    || typeof email !== "string"
-   || email.indexOf("@") < 0
+   || email.indexOf("@") &lt; 0
     ) {
     return treatInvalid({ email })
 
@@ -1975,11 +1972,11 @@ module.exports = validateSignup</code></pre>
 <h2>11. Notes on Test Driven Development</h2>
 <p>In the last section, you created a test script and ran it each time the server relaunched. You then wrote (or you should have written) another script, with the aim of seeing a series of green check marks in the Terminal window, indicating that your script passed all the tests.</p>
 <p>The process of writing tests before you write the code is called <i>Test Driven Development</i>, and many people consider it good practice. Writing the tests themselves is complex and it takes time. You may have noticed that I did not describe in detail how the tests worked. Writing good tests should be the responsibility of senior developers. <a href="design" class="external">An error in a test suite can cost millions.<span></span></a></p>
-<aside class="alert">
+<aside aria-label="aside19" class="alert">
   <p>Another important point to note is that the approach I got you to use is non-standard. The only advantage of this non-standard approach is that you don't have to master any new techniques to get it to work</p>
 </aside>
 <p>There are much better ways of running tests than this. You can use a testing framework like <a href="https://jestjs.io/" class="external">Jest<span></span></a> to run tests in parallel to your development, rather than hard-coding tests into the server itself.</p>
-<aside>
+<aside aria-label="aside20">
   <p>If your <code>validateSignup</code> function passes all the tests, now would be a good time to remove these lines from <code>database/index.js</code> </p>
   <pre data-start="12">
   <code class="language-javascript line-numbers"
@@ -2077,7 +2074,7 @@ const DEFAULTS = {
 }
 
 
-const makeToken = ( payload, options = {} ) => {
+const makeToken = ( payload, options = {} ) =&gt; {
   if (typeof options !== "object") {
     // Ignore options if it's not an object
     options = {}
@@ -2099,7 +2096,7 @@ const makeToken = ( payload, options = {} ) => {
 module.exports = {
   makeToken
 }</code></pre>
-<p>This script uses the <button data-name="anchor-install"><code>jsonwebtoken</code> Node module that you installed</button> right at the beginning of this project and the <code>JWT_SECRET</code> that you have just created. The <code>makeToken</code> function uses default values for the <code>header</code> options, and uses the chosen algorithm to sign a <code>payload</code>. In a moment, you will be creating a payload object containing the user's <code>id</code> as recorded in your database.</p>
+<p>This script uses the <button type="button" data-name="anchor-install"><code>jsonwebtoken</code> Node module that you installed</button> right at the beginning of this project and the <code>JWT_SECRET</code> that you have just created. The <code>makeToken</code> function uses default values for the <code>header</code> options, and uses the chosen algorithm to sign a <code>payload</code>. In a moment, you will be creating a payload object containing the user's <code>id</code> as recorded in your database.</p>
 <h4>Simplifying Calls to <code>makeToken</code></h4>
 <p>To simplify the way you call <code>makeToken</code> from other scripts, edit <code>middleware/index.js</code> so that it looks like this:</p>
 <pre>
@@ -2113,7 +2110,7 @@ const { makeToken } = require('./jwToken')
   validateSignup,</i>
   makeToken
 <i>}</i></code></pre>
-<p>Now if you change the name of the <code>jwToken.js</code> file for any reason</code>, you will need to update your code in only one place to access the <code>makeToken</code> function.</p>
+<p>Now if you change the name of the <code>jwToken.js</code> file for any reason, you will need to update your code in only one place to access the <code>makeToken</code> function.</p>
 <h4>Enabling Cookies for your Server</h4>
 <p>Before you can set cookies, your need to activate <a href="https://www.npmjs.com/package/cookie-session" class="external">the <code>cookie-session</code> Node module<span></span></a>. Add the following lines in <code>server.js</code>:</p>
 <pre>
@@ -2148,7 +2145,7 @@ app.use(cookieSession(cookieOptions))
 <pre data-start="22">
 <code class="language-javascript line-numbers"
 >app.use(cookieSession(cookieOptions))</code></pre>
-<p>... will add a property called <code>session</code> to <code>req.body</code>. If the value of this <code>req.body.session</code> is altered (<button data-name="anchor-cookie">as you will do shortly</button>), then <code>cookieSession</code> will add a <code>Set-Cookie</code> header to the <code>res</code> object, so that the browser will receive the value of <code>req.body.session</code> as a cookie.</p>
+<p>... will add a property called <code>session</code> to <code>req.body</code>. If the value of this <code>req.body.session</code> is altered (<button type="button" data-name="anchor-cookie">as you will do shortly</button>), then <code>cookieSession</code> will add a <code>Set-Cookie</code> header to the <code>res</code> object, so that the browser will receive the value of <code>req.body.session</code> as a cookie.</p>
 <p>Note how <code>cookieOptions</code> ensures that:</p>
 <ul>
   <li>The cookie is called "authorization"</li>
@@ -2193,7 +2190,7 @@ function signIn(req, res) {
 
 
   function findUser(query) {
-    return new Promise((resolve, reject ) => {
+    return new Promise((resolve, reject ) =&gt; {
       User.findOne(query)
         .then(checkPassword)
         .catch(reject)
@@ -2239,10 +2236,10 @@ function signIn(req, res) {
 
 
 module.exports = signIn</code></pre>
-<p>This script uses the <code>bcrypt</code> Node module that <button data-name="anchor-signup">you used earlier</button> to generate a hash from the password that the user signed up with. This time, it will call <code id="bcrypt_s">bcrypt</code>'s <code>compareSync()</code> method, to check if the password in the form data matches the hash stored in the database.</p>
+<p>This script uses the <code>bcrypt</code> Node module that <button type="button" data-name="anchor-signup">you used earlier</button> to generate a hash from the password that the user signed up with. This time, it will call <code id="bcrypt_s">bcrypt</code>'s <code>compareSync()</code> method, to check if the password in the form data matches the hash stored in the database.</p>
 <p>The script also uses the <code>User</code> model and the <code>makeToken</code> function from the script that you have just added to the <code>middleware</code> folder.</p>
-<aside>
-  <p>This script uses the same technique as <button data-name="anchor-validate">the <code>validateSignup</code> script</button>; it starts by setting</p>
+<aside aria-label="aside21">
+  <p>This script uses the same technique as <button type="button" data-name="anchor-validate">the <code>validateSignup</code> script</button>; it starts by setting</p>
   <pre data-start="12">
   <code class="language-javascript line-numbers"
   >let status = 0
@@ -2278,7 +2275,7 @@ module.exports = signIn</code></pre>
 <pre data-start="31">
 <code class="language-javascript line-numbers"
 >function findUser(query) {
-  return new Promise((resolve, reject ) => {
+  return new Promise((resolve, reject ) =&gt; {
     User.findOne(query).exec()
       .then(checkPassword)
       .catch(reject)</code></pre>
@@ -2348,7 +2345,7 @@ const signIn = require('./signin')
 <i>} = require('../controllers')
 
 
-const routes = app => {
+const routes = app =&gt; {
   app.post('/signup', validateSignup, signUp)</i>
   app.post('/signin', signIn)
 <i>}</i>
@@ -2409,13 +2406,13 @@ module.exports = routes</code></pre>
 &lt;/head&gt;
 
 &lt;body&gt;
-  &ltform
+  &lt;form
     action="/signin"
     method="POST"
   &gt;
   &lt;label for="id"&gt;
     &lt;span&gt;Username OR Email:&lt;/span&gt;
-    &ltinput
+    &lt;input
       type="text"
       id="id"
       name="id"
@@ -2424,7 +2421,7 @@ module.exports = routes</code></pre>
   &lt;/label&gt;
     &lt;label for="password"&gt;
       &lt;span&gt;Password:&lt;/span&gt;
-      &ltinput
+      &lt;input
         type="password"
         id="password"
         name="password"
@@ -2432,7 +2429,7 @@ module.exports = routes</code></pre>
         required
       /&gt;
     &lt;/label&gt;
-    &ltbutton
+    &lt;button
       type="submit"
     &gt;
       Sign In
@@ -2474,14 +2471,14 @@ module.exports = routes</code></pre>
 <p>Ensure that your server is running, then visit <a href="http://localhost:5555/sign/in/">localhost:5555/sign/in/</a>. Enter <i>either</i> the username <i>or</i> the email that is stored in a User document in your database, enter the correct password, then click on Sign In. In the browser's Console, you should see the message:</p>
 <blockquote>signin response: {"success":"Logged in!"}</blockquote>
 <p>Click on the Network tab and inspect the Response Headers for the <code>POST</code> request for <code>/signin</code>. It should look something like this:</p>
-<img src="tutorial/images/sign-in.png" alt="signin headers">
+<img src="images/sign-in.png" alt="signin headers">
 <p>Copy the text of the <code>authorisation</code> cookie (excluding any leading or trailing <code>=</code> symbols). Visit <a href="https://jwt.io/" class="external">jwt.io<span></span></a> and scroll the page down until you see the Debugger. Paste the text of the cookie into the Encoded field:</p>
-<img src="tutorial/images/jwt_io.png" alt="image_name">
-<p>In the Decoded field, you should see a JSON string. This is the <code>token</code> object created by <button data-name="anchor-makeToken">the <code>makeToken()</code> middleware function</button>.</p>
+<img src="images/jwt_io.png" alt="image_name">
+<p>In the Decoded field, you should see a JSON string. This is the <code>token</code> object created by <button type="button" data-name="anchor-makeToken">the <code>makeToken()</code> middleware function</button>.</p>
 <p>Copy the text of the <code>token</code> and paste it into the Encoded field. In the Decoded field, you should see that the <code>payload</code> includes an <code>id</code> property.</p>
-<img src="tutorial/images/token_id.png" alt="decoded token id" name="anchor-token">
+<img src="images/token_id.png" alt="decoded token id" name="anchor-token">
 <p>In your Terminal or with MongoDB Atlas (if that's what you are using), check that this matches the <code>ObjectId</code> of the MongoDB User document for this user:</p>
-<img src="tutorial/images/objectId.png" alt="ObjectId for the User">
+<img src="images/objectId.png" alt="ObjectId for the User">
 </section>
 
 <section
@@ -2491,14 +2488,14 @@ module.exports = routes</code></pre>
   <h2>15. Log Out</h2>
   <p>OK, I understand you. Now that you can sign in to an account, you are impatient to access the privileged data that only signed-in users can see. Your reward is coming, but first I want to show you how easy it is to sign out.</p>
   <p>The logic is just the same as you have already seen for signing up and signing in:</p>
-  
+
   <ul>
     <li>A controller script with a <code>signOut()</code> function to take an action (deleting the session cookie)</li>
     <li>A change to the <code>controllers/index.js</code> script to simplify access to the <code>signOut()</code> function</li>
     <li>A route to send <code>POST</code> requests for <code>/signout</code> to the controller script</li>
     <li>An HTML page served from the <code>public</code> folder, containing a form with a Sign Out button</li>
   </ul>
-  
+
   <p>To start with the <code>controller</code> — add a file at <code>controller/signout.js</code>:</p>
   <pre>
   <code class="language-javascript line-numbers"
@@ -2507,23 +2504,23 @@ module.exports = routes</code></pre>
   function signOut(req, res) {
     let status = 0
     let message
-  
+
     try {
       req.session = null
       message = { success: "Signed out." }
-  
+
     } catch(error) {
       message = error
     }
-  
+
     if (status) {
       res.status(status)
     }
-  
+
     res.send(message)
   }
-  
-  
+
+
   module.exports = signOut</code></pre>
 
 <p>Add two lines to <code>controllers/index.js</code>:</p>
@@ -2555,7 +2552,7 @@ const {
 <i>} = require('../controllers')
 
 
-const routes = app => {
+const routes = app =&gt; {
   app.post('/signup', validateSignup, signUp)
   app.post('/signin', signIn)</i>
   app.post('/signout', signOut)
@@ -2628,8 +2625,8 @@ module.exports = routes</i></code></pre>
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p>Now you can visit <a href="http://localhost:5555/sign/out/">localhost:5555/sign/out/</a>, and click on the Sign Out button. If you visit the Storage > Cookies tab in the Developer Tools, you'll see that there are no longer any cookies set for this <code>http://localhost:5555</code>.</p>
-<img src="tutorial/images/signed-out.png" alt="No cookies">
+<p>Now you can visit <a href="http://localhost:5555/sign/out/">localhost:5555/sign/out/</a>, and click on the Sign Out button. If you visit the Storage &gt; Cookies tab in the Developer Tools, you'll see that there are no longer any cookies set for this <code>http://localhost:5555</code>.</p>
+<img src="images/signed-out.png" alt="No cookies">
 </section>
 
 <section
@@ -2643,11 +2640,11 @@ module.exports = routes</i></code></pre>
 <code class="language-javascript line-numbers"
 >/* controllers/content.js */
 
-const public = (req, res) => {
+const public = (req, res) =&gt; {
   res.status(200).send("Public content")
 };
 
-const private = (req, res) => {
+const private = (req, res) =&gt; {
   res.status(200).send(`Private content for ${req.userId}`)
 }
 
@@ -2701,7 +2698,7 @@ const DEFAULTS = {
 }
 
 
-const makeToken = ( payload, options = {} ) => {
+const makeToken = ( payload, options = {} ) =&gt; {
   if (typeof options !== "object") {
     // Ignore options if it's not an object
     options = {}
@@ -2720,7 +2717,7 @@ const makeToken = ( payload, options = {} ) => {
 }</i>
 
 
-const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) =&gt; {
   const token = req.session?.token
 
   let status = 0
@@ -2775,7 +2772,7 @@ const verifyToken = (req, res, next) => {
   <li><code>error</code>, which will be <code>null</code> if the signature was verified, or an error object if not</li>
   <li>the <code>payload</code> object (if error was <code>null</code>), or <code>undefined</code> if the signature could not be verified</li>
 </ul>
- <p>data-name="anchor-token">As you saw earlier</button>, the payload contains the <code>id</code> stored in the signed-in users User document. The property <code>req.userId</code> is then set to the value of <code>id</code> that was retrieved from the token. This means that the <code>next()</code> function (the <code>private</code> function from <code>controllers/content.js</code>) has access to it.</p>
+ <p><button type="button" data-name="anchor-token">As you saw earlier</button>, the payload contains the <code>id</code> stored in the signed-in users User document. The property <code>req.userId</code> is then set to the value of <code>id</code> that was retrieved from the token. This means that the <code>next()</code> function (the <code>private</code> function from <code>controllers/content.js</code>) has access to it.</p>
 <p>In a real project, this <code>userId</code> would be used to read the requested private data from the database.</p>
 <h4>Simplifying Access to <code>verifyToken</code></h4>
 <p>To give <code>routes/content.js</code> direct access to <code>verifyToken</code>, edit the script at <code>middleware/index.js</code>:</p>
@@ -2829,7 +2826,7 @@ require('./routes/authorization')(app)</i>
 require('./routes/content')(app)
 
 
-<i>app.get('/', (req, res) => {
+<i>app.get('/', (req, res) =&gt; {
   const { protocol, hostname } = req
   res.send(`&lt;pre&gt;Connected to ${protocol}://${hostname}:${PORT}
 ${Date()}&lt;/pre&gt;`)
@@ -2843,13 +2840,13 @@ function logStuffToConsole() {
   const nets = require("os").networkInterfaces()
   const ips = Object.values(nets)
   .flat()
-  .filter(({ family }) => (
+  .filter(({ family }) =&gt; (
     family === "IPv4")
   )
-  .map(({ address }) => address)
+  .map(({ address }) =&gt; address)
   ips.unshift("localhost")
 
-  const hosts = ips.map( ip => (
+  const hosts = ips.map( ip =&gt; (
     `http://${ip}:${PORT}`)
   ).join("\n  ")
   console.log(`Express server listening at:
@@ -2858,7 +2855,7 @@ function logStuffToConsole() {
 }</i></code></pre>
 <h4>Testing from a Browser</h4>
 <p>You recently signed out of your web site. If you visit <a href="http://localhost:5555/private">localhost:5555/private</a> while signed out, you'll see an error message, which is delivered with a <code>403 Forbidden</code> status:</p>
-<img src="tutorial/images/403.png" alt="403 Forbidden">
+<img src="images/403.png" alt="403 Forbidden">
 <p>In a real project, the frontend team would deal with handling this gracefully. For now, all that matters is that end users cannot access private data if they are not signed in.</p>
 <h4>Visiting as a Signed-in User</h4>
 <p>If you visit <a href="http://localhost:5555/sign/in/">localhost:5555/sign/in/</a>, sign in again, and then return to <a href="http://localhost:5555/private">localhost:5555/private</a>, you should see:</p>
@@ -2887,14 +2884,14 @@ function logStuffToConsole() {
   <hr>
   <div class="repo">
     <a href="https://github.com/MERNCraft/register-login">
-      <img src="tutorial/images/github.svg" alt="github logo">
+      <img src="images/github.svg" alt="github logo">
       <span>GitHub repository</span>
     </a>
   </div>
-  <aside class="tip center feedback-small">
+  <aside aria-label="aside22" class="tip center feedback-small">
     <p>If you had any difficulties with this tutorial, or any suggestions on how to improve it, please <a href="https://github.com/MERNCraft/register-login/issues/new">submit&nbsp;an&nbsp;issue&nbsp;on&nbsp;GitHub</a>.</p>
   </aside>
-  <aside class="tip center feedback-wide">
+  <aside aria-label="aside23" class="tip center feedback-wide">
     <p>If you had any difficulties with this tutorial,<br>or any suggestions on how to improve it,<br>please <a href="https://github.com/MERNCraft/register-login/issues/new">submit an issue on GitHub</a>.</p>
   </aside>
 </section>
@@ -2930,18 +2927,18 @@ function logStuffToConsole() {
 </ul>
 <div class="repo">
   <a href="https://github.com/MERNCraft/register-login">
-    <img src="tutorial/images/github.svg" alt="github logo">
+    <img src="images/github.svg" alt="github logo">
     <span>GitHub repository</span>
   </a>
 </div>
-<aside class="tip center feedback-small">
+<aside aria-label="aside24" class="tip center feedback-small">
   <p>If you have any difficulties with this tutorial, or any suggestions on how to improve it, please <a href="https://github.com/MERNCraft/register-login/issues/new">submit&nbsp;an&nbsp;issue&nbsp;on&nbsp;GitHub</a>.</p>
 </aside>
-<aside class="tip center feedback-wide">
+<aside aria-label="aside25" class="tip center feedback-wide">
   <p>If you have any difficulties with this tutorial,<br>or any suggestions on how to improve it,<br>please <a href="https://github.com/MERNCraft/register-login/issues/new">submit an issue on GitHub</a>.</p>
 </aside>
 <hr>
-<aside class="warn">
+<aside aria-label="aside26" class="warn">
   <p>In this tutorial, you <strong>won't</strong> be learning:</p>
 
   <ul>
@@ -2956,7 +2953,7 @@ function logStuffToConsole() {
   <p>* These topics will be covered in future tutorials.</p>
 </aside>
 
-<aside class="vscode">
+<aside aria-label="aside27" class="vscode">
   <h4>Development Environment</h4>
 
   <p>I use <a href="https://code.visualstudio.com/" class="external">Microsoft's Visual Studio Code<span></span></a> as my code editor, <a href="https://www.mozilla.org/en-US/firefox/new/" class="external">Mozilla Firefox<span></span></a> as my default browser, on a laptop running MacOS Sonoma. If you are using a different IDE, browser or a different operating system, the screenshots may not match exactly what you see.</p>
@@ -2968,10 +2965,10 @@ function logStuffToConsole() {
 
 <div class="spacer"></div>
     <footer id="footer">
-      <button id="previous" disabled>&lt;</button>
+      <button type="button" id="previous" disabled>&lt;</button>
       <span id="previous-name"></span>
       <span class="spacer"></span>
-      <button id="next">&gt;</button>
+      <button type="button" id="next">&gt;</button>
       <span id="next-name"></span>
     </footer>
   </main>
@@ -3018,13 +3015,13 @@ function logStuffToConsole() {
 
     <ul id="menu-items">
       <li class="spacer"></li>
-      <a class="feedback" href="https://github.com/MERNCraft/register-login/issues/new">Feedback</a>
+      <li><a class="feedback" href="https://github.com/MERNCraft/register-login/issues/new">Feedback</a></li>
       <li class="repo">
         <a
           class="feedback"
           href="https://github.com/MERNCraft/register-login"
         >
-          <img src="tutorial/images/github.svg" alt="github logo">
+          <img src="images/github.svg" alt="github logo">
           <span>GitHub repository</span>
         </a>
       </li>

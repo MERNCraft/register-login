@@ -37,14 +37,14 @@
   }
 }
 
-@media (min-width: 750px) {
+@media (min-width: 810px) {
   main {
     padding-left: 6px;
     padding-right: 6px
   }
 }
 
-@media (min-width: 930px) {
+@media (min-width: 990px) {
   main {
     --extra: calc((100vw - var(--menu-width) - var(--main-width)) / 2);
     --left-margin: calc(var(--menu-width) + var(--extra));
